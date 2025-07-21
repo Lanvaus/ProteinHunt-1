@@ -179,8 +179,8 @@ const styles = StyleSheet.create({
   banner: {
     backgroundColor: '#18853B',
     borderRadius: 16,
-    margin: 16,
-    padding: 16,
+    margin: 14, // increased from 12
+    padding: 14, // increased from 12
     overflow: 'hidden',
   },
   bannerContent: {
@@ -192,14 +192,14 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   bannerTitle: {
-    fontSize: 20,
+    fontSize: 18, // reduced from 20
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 15,
+    marginBottom: 10, // reduced from 15
   },
   bannerImage: {
-    width: 120,
-    height: 120,
+    width: 100, // reduced from 120
+    height: 100, // reduced from 120
     resizeMode: 'contain',
   },
   orderButton: {
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   bannerIndicators: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: 5, // reduced from 10
   },
   indicator: {
     width: 8,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    marginVertical: 16,
+    marginVertical: 10, // reduced from 16
   },
   sectionTitle: {
     fontSize: 18,
@@ -252,10 +252,10 @@ const styles = StyleSheet.create({
   },
   categoryCard: {
     width: '48%',
-    height: 150,
+    height: 120, // reduced from 150
     borderRadius: 12,
     overflow: 'hidden',
-    marginBottom: 16,
+    marginBottom: 12, // reduced from 16
   },
   categoryImage: {
     width: '100%',
@@ -285,19 +285,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#FFF9E5',
     borderRadius: 16,
-    padding: 16,
+    padding: 12, // reduced from 16
+    marginVertical: 6, // reduced from 8
     marginHorizontal: 16,
-    marginVertical: 8,
   },
   nutritionistTextContainer: {
     flex: 1,
     justifyContent: 'center',
   },
   nutritionistTitle: {
-    fontSize: 18,
+    fontSize: 16, // reduced from 18
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 16,
+    marginBottom: 12, // reduced from 16
   },
   bookButton: {
     backgroundColor: '#18853B',
@@ -312,22 +312,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   nutritionistImage: {
-    width: 100,
-    height: 120,
+    width: 80, // reduced from 100
+    height: 100, // reduced from 120
     resizeMode: 'contain',
   },
   featureCardsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 80,
+    marginTop: 12, // reduced from 16
+    marginBottom: 70, // reduced from 80
   },
   featureCard: {
     width: '48%',
     backgroundColor: '#F0F9F4',
     borderRadius: 16,
-    padding: 16,
+    padding: 12, // reduced from 16
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
