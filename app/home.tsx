@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import {
     Image,
@@ -12,6 +13,8 @@ import {
 } from 'react-native';
 
 const HomeScreen = () => {
+  const router = useRouter();
+  
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
@@ -73,7 +76,10 @@ const HomeScreen = () => {
         </View>
 
         <View style={styles.categoriesContainer}>
-          <TouchableOpacity style={styles.categoryCard}>
+          <TouchableOpacity 
+            style={styles.categoryCard} 
+            onPress={() => router.push('/protein-picks')}
+          >
             <Image
               source={require('../assets/images/protein-picks.png')}
               style={styles.categoryImage}
@@ -84,7 +90,10 @@ const HomeScreen = () => {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.categoryCard}>
+          <TouchableOpacity 
+            style={styles.categoryCard}
+            onPress={() => router.push('/protein-picks')}
+          >
             <Image
               source={require('../assets/images/protein-combos.png')}
               style={styles.categoryImage}
