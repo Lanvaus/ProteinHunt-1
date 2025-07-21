@@ -1,4 +1,4 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
@@ -115,7 +115,10 @@ const HomeScreen = () => {
         {/* Feature Cards */}
         <View style={styles.featureCardsContainer}>
           <TouchableOpacity style={styles.featureCard}>
-            <Ionicons name="arrow-up-outline" size={28} color="#18853B" />
+            <Image
+              source={require('../assets/images/diet-plan.png')}
+              style={styles.featureImage}
+            />
             <View style={styles.featureTextContainer}>
               <Text style={styles.featureTitle}>Diet Plan</Text>
               <Text style={styles.featureDescription}>Upload your diet or choose a curated one</Text>
@@ -123,7 +126,10 @@ const HomeScreen = () => {
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.featureCard}>
-            <MaterialCommunityIcons name="bowl-mix" size={28} color="#18853B" />
+            <Image
+              source={require('../assets/images/build-a-bowl.png')}
+              style={styles.featureImage}
+            />
             <View style={styles.featureTextContainer}>
               <Text style={styles.featureTitle}>Build-a-Bowl</Text>
               <Text style={styles.featureDescription}>Customize your bowl</Text>
@@ -427,7 +433,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.10,
     shadowRadius: 6,
     elevation: 6,
-    transform: [{ scale: 1.05 }],
   },
   featureTextContainer: {
     marginLeft: 10,
@@ -443,6 +448,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#666',
     opacity: 0.9,
+  },
+  featureImage: {
+    width: 38,
+    height: 38,
+    resizeMode: 'contain',
+    marginRight: 10,
   },
   navigationBar: {
     position: 'absolute',
