@@ -1,8 +1,20 @@
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const AuthChoiceScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const router = useRouter();
+
+  const handleNext = () => {
+    if (phoneNumber.trim()) {
+      // Navigate to OTP verification screen with phone number as parameter
+      router.push({
+        pathname: '/verify-otp',
+        params: { phoneNumber }
+      });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -26,7 +38,7 @@ const AuthChoiceScreen = () => {
       </View>
 
       {/* Next Button */}
-      <TouchableOpacity style={styles.nextButton} onPress={() => { /* Handle Next */ }}>
+      <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
         <Text style={styles.nextButtonText}>Next</Text>
       </TouchableOpacity>
 
