@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(24, 133, 59, 0.7)',
+    backgroundColor: 'rgba(25, 26, 25, 0.7)',
     padding: 10,
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
   },
   featureCard: {
     width: '48%',
-    backgroundColor: '#F0F9F4',
+    backgroundColor: '#E5FFF4',
     borderRadius: 18,
     padding: 16,
     flexDirection: 'row',
