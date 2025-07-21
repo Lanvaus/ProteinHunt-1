@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   banner: {
-    backgroundColor: '#18853B',
+    backgroundColor: '#4FAF5A',
     borderRadius: 16,
     margin: 14, // increased from 12
     padding: 14, // increased from 12
