@@ -1,7 +1,9 @@
-import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const AuthChoiceScreen = () => {
+  const [phoneNumber, setPhoneNumber] = useState('');
+
   return (
     <View style={styles.container}>
       {/* Logo */}
@@ -12,12 +14,20 @@ const AuthChoiceScreen = () => {
         />
       </View>
 
-      {/* Log In and Sign Up Buttons */}
-      <TouchableOpacity style={styles.loginButton} onPress={() => { /* Handle Log In */ }}>
-        <Text style={styles.loginButtonText}>Log In</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.signupButton} onPress={() => { /* Handle Sign Up */ }}>
-        <Text style={styles.signupButtonText}>Sign Up</Text>
+      {/* Phone Number Input */}
+      <View style={styles.phoneInputContainer}>
+        <TextInput
+          style={styles.phoneInput}
+          placeholder="Enter your phone number"
+          keyboardType="phone-pad"
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
+        />
+      </View>
+
+      {/* Next Button */}
+      <TouchableOpacity style={styles.nextButton} onPress={() => { /* Handle Next */ }}>
+        <Text style={styles.nextButtonText}>Next</Text>
       </TouchableOpacity>
 
       {/* Divider with Or */}
@@ -64,30 +74,28 @@ const styles = StyleSheet.create({
     height: 120,
     resizeMode: 'contain',
   },
-  loginButton: {
-    backgroundColor: '#18853B',
-    borderRadius: 10,
-    paddingVertical: 16,
-    alignItems: 'center',
+  phoneInputContainer: {
     width: '100%',
     marginBottom: 16,
   },
-  loginButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
+  phoneInput: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 10,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    fontSize: 16,
   },
-  signupButton: {
-    borderWidth: 2,
-    borderColor: '#18853B',
+  nextButton: {
+    backgroundColor: '#18853B',
     borderRadius: 10,
     paddingVertical: 16,
     alignItems: 'center',
     width: '100%',
     marginBottom: 32,
   },
-  signupButtonText: {
-    color: '#18853B',
+  nextButtonText: {
+    color: '#fff',
     fontSize: 18,
     fontWeight: '600',
   },
