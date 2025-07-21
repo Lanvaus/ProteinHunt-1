@@ -1,4 +1,5 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
     Image,
@@ -13,6 +14,10 @@ import {
 const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={['#F5F5F5', '#E8F5E9']}
+        style={StyleSheet.absoluteFill}
+      />
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header with Location */}
         <View style={styles.header}>
@@ -30,27 +35,34 @@ const HomeScreen = () => {
         </View>
 
         {/* Promotional Banner */}
-        <View style={styles.banner}>
+        <LinearGradient
+          colors={['#4FAF5A', '#18853B']}
+          start={[0, 0]}
+          end={[1, 1]}
+          style={styles.banner}
+        >
           <View style={styles.bannerContent}>
             <View style={styles.bannerTextContainer}>
               <Text style={styles.bannerTitle}>
-                Claim your discount 30% daily now!
+                Claim your {'\n'} discount 30%  {'\n'} daily now!
               </Text>
               <TouchableOpacity style={styles.orderButton}>
                 <Text style={styles.orderButtonText}>Order now</Text>
               </TouchableOpacity>
             </View>
-            <Image
-              source={require('../assets/images/protein-bowl.png')}
-              style={styles.bannerImage}
-            />
+            <View style={styles.bannerImageWrapper}>
+              <Image
+                source={require('../assets/images/protein-bowl.png')}
+                style={styles.bannerImage}
+              />
+            </View>
           </View>
           <View style={styles.bannerIndicators}>
             <View style={[styles.indicator, styles.activeIndicator]} />
             <View style={styles.indicator} />
             <View style={styles.indicator} />
           </View>
-        </View>
+        </LinearGradient>
 
         {/* Top Categories */}
         <View style={styles.categoriesHeader}>
@@ -92,10 +104,12 @@ const HomeScreen = () => {
               <Text style={styles.bookButtonText}>Book Consultation</Text>
             </TouchableOpacity>
           </View>
-          <Image
-            source={require('../assets/images/nutritionist.png')}
-            style={styles.nutritionistImage}
-          />
+          <View style={styles.nutritionistImageWrapper}>
+            <Image
+              source={require('../assets/images/nutritionist.png')}
+              style={styles.nutritionistImage}
+            />
+          </View>
         </View>
 
         {/* Feature Cards */}
@@ -119,7 +133,10 @@ const HomeScreen = () => {
       </ScrollView>
 
       {/* Navigation Bar */}
-      <View style={styles.navigationBar}>
+      <LinearGradient
+        colors={['#FFFFFF', '#E8F5E9']}
+        style={styles.navigationBar}
+      >
         <TouchableOpacity style={styles.navItem}>
           <Ionicons name="home" size={24} color="#18853B" />
           <View style={styles.activeNavDot} />
@@ -128,9 +145,12 @@ const HomeScreen = () => {
           <Ionicons name="person-outline" size={24} color="#999" />
         </TouchableOpacity>
         <View style={styles.navCenterItem}>
-          <View style={styles.navCenterButton}>
+          <LinearGradient
+            colors={['#4FAF5A', '#18853B']}
+            style={styles.navCenterButton}
+          >
             <Ionicons name="locate" size={24} color="#FFF" />
-          </View>
+          </LinearGradient>
         </View>
         <TouchableOpacity style={styles.navItem}>
           <Ionicons name="chatbox-outline" size={24} color="#999" />
@@ -138,7 +158,7 @@ const HomeScreen = () => {
         <TouchableOpacity style={styles.navItem}>
           <Ionicons name="cart-outline" size={24} color="#999" />
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
     </SafeAreaView>
   );
 };
@@ -152,8 +172,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    marginTop: 8,
+    marginBottom: 2,
   },
   locationContainer: {
     flexDirection: 'row',
@@ -165,230 +187,313 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   locationLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#888',
+    fontWeight: '500',
   },
   locationValue: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#333',
-    fontWeight: '600',
+    fontWeight: '700',
   },
   notificationButton: {
-    padding: 8,
+    padding: 10,
+    backgroundColor: '#F0F9F4',
+    borderRadius: 16,
+    elevation: 2,
   },
   banner: {
-    backgroundColor: '#4FAF5A',
-    borderRadius: 16,
-    margin: 14, // increased from 12
-    padding: 14, // increased from 12
+    borderRadius: 20,
+    margin: 16,
+    padding: 16,
     overflow: 'hidden',
+    shadowColor: '#4FAF5A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 8,
   },
   bannerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   bannerTextContainer: {
     flex: 1,
     paddingRight: 10,
+    justifyContent: 'center',
   },
   bannerTitle: {
-    fontSize: 18, // reduced from 20
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 10, // reduced from 15
+    marginBottom: 12,
+    letterSpacing: 0.5,
+  },
+  bannerImageWrapper: {
+    backgroundColor: '#fff',
+    borderRadius: 60,
+    padding: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 6,
   },
   bannerImage: {
-    width: 100, // reduced from 120
-    height: 100, // reduced from 120
+    width: 110,
+    height: 110,
     resizeMode: 'contain',
+    borderRadius: 55,
   },
   orderButton: {
-    backgroundColor: '#000',
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    backgroundColor: '#fff',
+    borderRadius: 22,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     alignSelf: 'flex-start',
+    marginTop: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 4,
   },
   orderButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
+    color: '#18853B',
+    fontWeight: '700',
+    fontSize: 15,
+    letterSpacing: 0.2,
   },
   bannerIndicators: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 5, // reduced from 10
+    marginTop: 8,
   },
   indicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
     backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    marginHorizontal: 3,
+    marginHorizontal: 4,
   },
   activeIndicator: {
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#18853B',
   },
   categoriesHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    marginVertical: 10, // reduced from 16
+    paddingHorizontal: 18,
+    marginVertical: 12,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
+    letterSpacing: 0.3,
   },
   seeAllText: {
-    color: '#999',
-    fontSize: 14,
+    color: '#18853B',
+    fontSize: 15,
+    fontWeight: '600',
   },
   categoriesContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   categoryCard: {
     width: '48%',
-    height: 120, // reduced from 150
-    borderRadius: 12,
+    height: 140,
+    borderRadius: 16,
     overflow: 'hidden',
-    marginBottom: 12, // reduced from 16
+    marginBottom: 14,
+    backgroundColor: '#fff',
+    shadowColor: '#4FAF5A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.13,
+    shadowRadius: 6,
+    elevation: 6,
+    position: 'relative',
   },
   categoryImage: {
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
+    borderRadius: 16,
   },
   categoryTextOverlay: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: 8,
+    backgroundColor: 'rgba(24, 133, 59, 0.7)',
+    padding: 10,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
   },
   categoryTitle: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 17,
+    marginBottom: 2,
   },
   categorySubtitle: {
     color: 'white',
-    fontSize: 12,
-    opacity: 0.8,
+    fontSize: 13,
+    opacity: 0.85,
   },
   nutritionistCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: '#FFF9E5',
-    borderRadius: 16,
-    padding: 12, // reduced from 16
-    marginVertical: 6, // reduced from 8
-    marginHorizontal: 16,
+    borderRadius: 18,
+    padding: 16,
+    marginVertical: 10,
+    marginHorizontal: 18,
+    shadowColor: '#FFD700',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 6,
+    elevation: 6,
+    alignItems: 'center',
   },
   nutritionistTextContainer: {
     flex: 1,
     justifyContent: 'center',
   },
   nutritionistTitle: {
-    fontSize: 16, // reduced from 18
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 12, // reduced from 16
+    marginBottom: 10,
   },
   bookButton: {
     backgroundColor: '#18853B',
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    borderRadius: 22,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
     alignSelf: 'flex-start',
+    marginTop: 2,
+    shadowColor: '#18853B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.13,
+    shadowRadius: 4,
+    elevation: 4,
   },
   bookButtonText: {
     color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
+    fontWeight: '700',
+    fontSize: 15,
+    letterSpacing: 0.2,
+  },
+  nutritionistImageWrapper: {
+    backgroundColor: '#fff',
+    borderRadius: 50,
+    padding: 4,
+    shadowColor: '#FFD700',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 6,
+    elevation: 6,
   },
   nutritionistImage: {
-    width: 80, // reduced from 100
-    height: 100, // reduced from 120
+    width: 90,
+    height: 110,
     resizeMode: 'contain',
+    borderRadius: 45,
   },
   featureCardsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    marginTop: 12, // reduced from 16
-    marginBottom: 70, // reduced from 80
+    paddingHorizontal: 18,
+    marginTop: 16,
+    marginBottom: 80,
   },
   featureCard: {
     width: '48%',
     backgroundColor: '#F0F9F4',
-    borderRadius: 16,
-    padding: 12, // reduced from 16
+    borderRadius: 18,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'flex-start',
+    shadowColor: '#18853B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 6,
+    elevation: 6,
   },
   featureTextContainer: {
-    marginLeft: 8,
+    marginLeft: 10,
     flex: 1,
   },
   featureTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   featureDescription: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#666',
+    opacity: 0.9,
   },
   navigationBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 70,
-    backgroundColor: 'white',
+    height: 74,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#EEEEEE',
+    paddingHorizontal: 10,
+    shadowColor: '#18853B',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 8,
+    elevation: 8,
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    backgroundColor: 'transparent',
   },
   navItem: {
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
     position: 'relative',
+    flex: 1,
   },
   activeNavDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
     backgroundColor: '#18853B',
     position: 'absolute',
-    bottom: 10,
+    bottom: 12,
   },
   navCenterItem: {
     alignItems: 'center',
     justifyContent: 'center',
+    flex: 1,
   },
   navCenterButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#18853B',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: '#18853B',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    marginBottom: 15,
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 8,
+    marginBottom: 18,
   },
 });
 
