@@ -18,7 +18,7 @@ export default function OnboardingScreen() {
         <Text style={styles.subtitle}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
         </Text>
-        <TouchableOpacity style={styles.button} onPress={() => router.replace('(tabs)')}>
+        <TouchableOpacity style={styles.button} onPress={() => router.replace('/auth-choice')}>
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
       </View>

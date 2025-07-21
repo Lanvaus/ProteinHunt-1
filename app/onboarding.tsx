@@ -1,7 +1,10 @@
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const OnboardingScreen = () => {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       {/* Image Section */}
@@ -22,7 +25,19 @@ const OnboardingScreen = () => {
       </View>
 
       {/* Get Started Button */}
-      <TouchableOpacity style={styles.button} onPress={() => { /* Handle button press */ }}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          try {
+            // Try both approaches for navigation
+            router.push('/auth-choice');
+            // If the above doesn't work, the error will be caught
+            console.log('Navigation attempted');
+          } catch (error) {
+            console.error('Navigation error:', error);
+          }
+        }}
+      >
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
     </View>
