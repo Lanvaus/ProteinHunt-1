@@ -348,45 +348,54 @@ const HomeScreen = () => {
       </ScrollView>
       
       {/* Navigation Bar */}
-      <LinearGradient
-        colors={['#FFFFFF', '#E8F5E9']}
-        style={styles.navigationBar}
-      >
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="home" size={24} color="#18853B" />
-          <View style={styles.activeNavDot} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="person-outline" size={24} color="#999" />
-        </TouchableOpacity>
-        <View style={styles.navCenterItem}>
+      <View style={styles.navigationContainer}>
+        <LinearGradient
+          colors={['#FFFFFF', '#E8F5E9']}
+          style={styles.navigationBar}
+        >
+          <TouchableOpacity style={styles.navItem}>
+            <Ionicons name="home" size={24} color="#18853B" />
+            <View style={styles.activeNavDot} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <Ionicons name="person-outline" size={24} color="#999" />
+          </TouchableOpacity>
+          <View style={styles.navCenterItemPlaceholder} />
+          <TouchableOpacity 
+            style={styles.navItem}
+            onPress={() => router.push('/orders')}
+          >
+            <Ionicons name="receipt-outline" size={24} color="#999" />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.navItem}
+            onPress={() => router.push('/cart')}
+          >
+            <Ionicons name="cart-outline" size={24} color="#999" />
+            {cart && cart.totalItems > 0 && (
+              <View style={styles.cartBadge}>
+                <Text style={styles.cartBadgeText}>
+                  {cart.totalItems > 99 ? '99+' : cart.totalItems}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </LinearGradient>
+        
+        {/* Floating center button with enhanced design */}
+        <View style={styles.floatingButtonContainer}>
           <LinearGradient
             colors={['#4FAF5A', '#18853B']}
             style={styles.navCenterButton}
+            start={[0, 0]}
+            end={[1, 1]}
           >
-            <Ionicons name="locate" size={24} color="#FFF" />
+            <View style={styles.innerCircle}>
+              <Ionicons name="locate" size={24} color="#FFF" />
+            </View>
           </LinearGradient>
         </View>
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => router.push('/orders')}
-        >
-          <Ionicons name="receipt-outline" size={24} color="#999" />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => router.push('/cart')}
-        >
-          <Ionicons name="cart-outline" size={24} color="#999" />
-          {cart && cart.totalItems > 0 && (
-            <View style={styles.cartBadge}>
-              <Text style={styles.cartBadgeText}>
-                {cart.totalItems > 99 ? '99+' : cart.totalItems}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 };
@@ -696,6 +705,14 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginRight: 10,
   },
+  navigationContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 74,
+    alignItems: 'center',
+  },
   navigationBar: {
     position: 'absolute',
     bottom: 0,
@@ -713,8 +730,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.10,
     shadowRadius: 8,
     elevation: 8,
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     backgroundColor: 'transparent',
   },
   navItem: {
@@ -749,23 +766,37 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-  navCenterItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  navCenterItemPlaceholder: {
+    width: 60,
     flex: 1,
   },
+  floatingButtonContainer: {
+    position: 'absolute',
+    bottom: 30,
+    alignSelf: 'center',
+    zIndex: 999,
+  },
   navCenterButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#18853B',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
-    elevation: 8,
-    marginBottom: 18,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 12,
+    borderWidth: 3,
+    borderColor: 'white',
+  },
+  innerCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   permissionBanner: {
     backgroundColor: '#FFF9E5',
