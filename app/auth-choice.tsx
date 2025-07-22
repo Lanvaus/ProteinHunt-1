@@ -1,18 +1,45 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import ApiService from '../services/api-service';
 
 const AuthChoiceScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleNext = () => {
-    if (phoneNumber.trim()) {
-      // Navigate to OTP verification screen with phone number as parameter
-      router.push({
-        pathname: '/verify-otp',
-        params: { phoneNumber }
-      });
+  const handleNext = async () => {
+    if (!phoneNumber.trim()) {
+      Alert.alert('Error', 'Please enter a valid phone number');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await ApiService.sendOtp(phoneNumber);
+      
+      if (response.success) {
+        // Navigate to OTP verification screen with phone number as parameter
+        router.push({
+          pathname: '/verify-otp',
+          params: { phoneNumber }
+        });
+      } else {
+        Alert.alert('Error', response.error || 'Failed to send OTP. Please try again.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -34,12 +61,21 @@ const AuthChoiceScreen = () => {
           keyboardType="phone-pad"
           value={phoneNumber}
           onChangeText={setPhoneNumber}
+          editable={!isLoading}
         />
       </View>
 
       {/* Next Button */}
-      <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-        <Text style={styles.nextButtonText}>Next</Text>
+      <TouchableOpacity 
+        style={[styles.nextButton, isLoading && styles.disabledButton]} 
+        onPress={handleNext}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.nextButtonText}>Next</Text>
+        )}
       </TouchableOpacity>
 
       {/* Divider with Or */}
@@ -105,6 +141,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginBottom: 32,
+  },
+  disabledButton: {
+    opacity: 0.7,
   },
   nextButtonText: {
     color: '#fff',

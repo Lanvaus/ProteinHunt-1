@@ -1,15 +1,31 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { useAuth } from '../context/AuthContext';
+import ApiService from '../services/api-service';
+
+const COUNTDOWN_SECONDS = 30;
 
 const VerifyOTP = () => {
   const router = useRouter();
-  const { phoneNumber } = useLocalSearchParams();
+  const params = useLocalSearchParams();
+  const phoneNumber = params.phoneNumber as string;
+  
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(COUNTDOWN_SECONDS);
   const [resendActive, setResendActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const inputRefs = useRef<Array<TextInput | null>>([]);
+  const { login } = useAuth();
 
   // Handle timer for resend code
   useEffect(() => {
@@ -25,6 +41,9 @@ const VerifyOTP = () => {
 
   // Handle OTP input change
   const handleOtpChange = (value: string, index: number) => {
+    // Allow only numbers
+    if (!/^\d*$/.test(value)) return;
+    
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
@@ -36,13 +55,29 @@ const VerifyOTP = () => {
   };
 
   // Handle resend code
-  const handleResend = () => {
-    if (resendActive) {
-      // Reset timer and OTP
-      setTimer(60);
-      setResendActive(false);
-      setOtp(['', '', '', '', '', '']);
-      // Add logic to resend OTP
+  const handleResend = async () => {
+    if (!resendActive) return;
+    
+    setResendActive(false);
+    setIsLoading(true);
+    
+    try {
+      const response = await ApiService.sendOtp(phoneNumber);
+      
+      if (response.success) {
+        // Reset timer and OTP
+        setTimer(COUNTDOWN_SECONDS);
+        setOtp(['', '', '', '', '', '']);
+        Alert.alert('Success', 'OTP resent successfully');
+      } else {
+        Alert.alert('Error', response.error || 'Failed to resend OTP');
+        setResendActive(true);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+      setResendActive(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -53,12 +88,47 @@ const VerifyOTP = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleConfirm = () => {
-    // Here you would typically validate the OTP
-    // For now, we'll just navigate to the home screen
-    router.replace('/home');
+  const handleConfirm = async () => {
+    if (otp.some(digit => !digit)) {
+      Alert.alert('Error', 'Please enter all 6 digits of the OTP');
+      return;
+    }
+    
+    const otpString = otp.join('');
+    setIsLoading(true);
+    
+    try {
+      const response = await ApiService.verifyOtp(phoneNumber, otpString);
+      
+      if (response.success && response.data) {
+        // Handle successful verification
+        const { jwtResponse } = response.data;
+        
+        if (jwtResponse && jwtResponse.token) {
+          // Use the auth context to login
+          await login(jwtResponse.token, {
+            id: jwtResponse.id,
+            firstName: jwtResponse.firstName,
+            lastName: jwtResponse.lastName,
+            email: jwtResponse.email,
+            roles: jwtResponse.roles
+          });
+          
+          // Navigate to home screen
+          router.replace('/protein-picks');
+        } else {
+          Alert.alert('Error', 'Authentication token not received');
+        }
+      } else {
+        Alert.alert('Error', response.error || 'Invalid OTP. Please try again.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
-
+  
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -87,6 +157,7 @@ const VerifyOTP = () => {
               keyboardType="number-pad"
               maxLength={1}
               textAlign="center"
+              editable={!isLoading}
             />
           ))}
         </View>
@@ -95,14 +166,26 @@ const VerifyOTP = () => {
           A code has been sent to {phoneNumber ? phoneNumber : 'your phone'}
         </Text>
         
-        <TouchableOpacity onPress={handleResend} disabled={!resendActive}>
-          <Text style={[styles.resendText, !resendActive && styles.resendInactive]}>
-            Resend in {formatTime(timer)}
+        <TouchableOpacity onPress={handleResend} disabled={!resendActive || isLoading}>
+          <Text style={[
+            styles.resendText, 
+            (!resendActive || isLoading) && styles.resendInactive
+          ]}>
+            {isLoading && resendActive ? 'Resending...' : 
+             !resendActive ? `Resend in ${formatTime(timer)}` : 'Resend'}
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-          <Text style={styles.confirmButtonText}>Confirm</Text>
+        <TouchableOpacity 
+          style={[styles.confirmButton, isLoading && styles.disabledButton]} 
+          onPress={handleConfirm}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.confirmButtonText}>Confirm</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -182,6 +265,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  disabledButton: {
+    opacity: 0.7,
   },
 });
 
