@@ -370,6 +370,12 @@ const HomeScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.navItem}
+          onPress={() => router.push('/orders')}
+        >
+          <Ionicons name="receipt-outline" size={24} color="#999" />
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.navItem}
           onPress={() => router.push('/cart')}
         >
           <Ionicons name="cart-outline" size={24} color="#999" />

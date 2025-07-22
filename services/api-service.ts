@@ -45,6 +45,38 @@ interface Meal {
   vegetarian: boolean;
 }
 
+interface Address {
+  id?: number;
+  label: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  isDefault: boolean;
+}
+
+interface OrderRequest {
+  deliveryAddressId: number;  // Changed from addressId to deliveryAddressId
+  paymentMethod: string;
+  specialInstructions?: string;
+}
+
+interface OrderResponse {
+  orderId: number;
+  status: string;
+  estimatedDeliveryTime: string;
+  totalAmount: number;
+}
+
+interface OrderHistoryResponse {
+  content: Order[];
+  totalElements: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+}
+
 class ApiService {
   static async sendOtp(phoneNumber: string): Promise<ApiResponse<any>> {
     try {
@@ -220,6 +252,37 @@ class ApiService {
 
   static async removeFromCart(cartItemId: number): Promise<ApiResponse<any>> {
     return await this.authenticatedRequest(`/cart/items/${cartItemId}`, 'DELETE');
+  }
+
+  // Checkout related methods
+  static async getSavedAddresses(): Promise<ApiResponse<Address[]>> {
+    return await this.authenticatedRequest<Address[]>('/user/addresses');
+  }
+
+  static async saveAddress(address: Address): Promise<ApiResponse<Address>> {
+    return await this.authenticatedRequest<Address>('/user/addresses', 'POST', address);
+  }
+
+  static async placeOrder(orderRequest: OrderRequest): Promise<ApiResponse<OrderResponse>> {
+    return await this.authenticatedRequest<OrderResponse>('/orders', 'POST', orderRequest);
+  }
+
+  static async applyPromoCode(code: string): Promise<ApiResponse<{ discount: number }>> {
+    return await this.authenticatedRequest<{ discount: number }>('/cart/promo', 'POST', { code });
+  }
+
+  // Get order details by ID
+  static async getOrderDetails(orderId: number): Promise<ApiResponse<any>> {
+    return await this.authenticatedRequest(`/orders/${orderId}`);
+  }
+
+  static async getOrderHistory(page: number = 1, pageSize: number = 10): Promise<ApiResponse<OrderHistoryResponse>> {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      pageSize: pageSize.toString()
+    });
+    
+    return await this.authenticatedRequest<OrderHistoryResponse>(`/orders?${queryParams.toString()}`);
   }
 
   // Helper method for authenticated requests
