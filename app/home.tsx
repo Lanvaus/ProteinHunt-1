@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useCart } from '../context/CartContext';
 import ApiService from '../services/api-service';
 import LocationService, { LocationPermissionStatus } from '../services/location-service';
 
@@ -25,6 +26,7 @@ interface UserLocation {
 
 const HomeScreen = () => {
   const router = useRouter();
+  const { cart } = useCart();
   const [location, setLocation] = useState<UserLocation | null>(null);
   const [isDeliveryAvailable, setIsDeliveryAvailable] = useState<boolean | null>(null);
   const [deliveryMessage, setDeliveryMessage] = useState<string | null>(null);
@@ -365,9 +367,6 @@ const HomeScreen = () => {
             <Ionicons name="locate" size={24} color="#FFF" />
           </LinearGradient>
         </View>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="chatbox-outline" size={24} color="#999" />
-        </TouchableOpacity>
         <TouchableOpacity 
           style={styles.navItem}
           onPress={() => router.push('/orders')}
@@ -379,6 +378,13 @@ const HomeScreen = () => {
           onPress={() => router.push('/cart')}
         >
           <Ionicons name="cart-outline" size={24} color="#999" />
+          {cart && cart.totalItems > 0 && (
+            <View style={styles.cartBadge}>
+              <Text style={styles.cartBadgeText}>
+                {cart.totalItems > 99 ? '99+' : cart.totalItems}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
       </LinearGradient>
     </SafeAreaView>
@@ -725,6 +731,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#18853B',
     position: 'absolute',
     bottom: 12,
+  },
+  cartBadge: {
+    position: 'absolute',
+    right: 10,
+    top: 12,
+    backgroundColor: '#FF3B30',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  cartBadgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   navCenterItem: {
     alignItems: 'center',
