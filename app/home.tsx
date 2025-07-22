@@ -270,7 +270,10 @@ const HomeScreen = () => {
         <View style={styles.categoriesContainer}>
           <TouchableOpacity 
             style={styles.categoryCard} 
-            onPress={() => router.push('/protein-picks')}
+            onPress={() => router.push({
+              pathname: '/protein-picks',
+              params: { mealType: 'PROTEIN_PICK', title: 'Protein Picks' }
+            })}
           >
             <Image
               source={require('../assets/images/protein-picks.png')}
@@ -284,7 +287,10 @@ const HomeScreen = () => {
 
           <TouchableOpacity 
             style={styles.categoryCard}
-            onPress={() => router.push('/protein-picks')}
+            onPress={() => router.push({
+              pathname: '/protein-picks',
+              params: { mealType: 'POWER_COMBO', title: 'Power Combos' }
+            })}
           >
             <Image
               source={require('../assets/images/protein-combos.png')}
@@ -362,7 +368,10 @@ const HomeScreen = () => {
         <TouchableOpacity style={styles.navItem}>
           <Ionicons name="chatbox-outline" size={24} color="#999" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity 
+          style={styles.navItem}
+          onPress={() => router.push('/cart')}
+        >
           <Ionicons name="cart-outline" size={24} color="#999" />
         </TouchableOpacity>
       </LinearGradient>

@@ -1,3 +1,4 @@
+import { Cart } from '../context/CartContext';
 import TokenService from './token-service';
 
 const BASE_URL = 'https://proteinhunt.in/api/v1';
@@ -22,6 +23,26 @@ interface DeliveryCheckResponse {
   serviceableKitchenId: number;
   serviceableKitchenName: string;
   distanceToKitchenKm: number;
+}
+
+interface Meal {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+  servingWeightGrams: number;
+  caloriesKcal: number;
+  nutritionValues: {
+    [key: string]: number;
+  };
+  price: number;
+  mealType: string;
+  mealCategory: {
+    id: number;
+    name: string;
+    imageUrl: string;
+  };
+  vegetarian: boolean;
 }
 
 class ApiService {
@@ -162,6 +183,43 @@ class ApiService {
         error: error instanceof Error ? error.message : 'Something went wrong',
       };
     }
+  }
+
+  static async getMeals(mealType?: string, mealCategoryId?: number): Promise<ApiResponse<Meal[]>> {
+    try {
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+      if (mealType) queryParams.append('mealType', mealType);
+      if (mealCategoryId) queryParams.append('mealCategory', mealCategoryId.toString());
+
+      const queryString = queryParams.toString();
+      const url = `/meals${queryString ? `?${queryString}` : ''}`;
+
+      // Use the authenticatedRequest helper method to include the auth token
+      return await this.authenticatedRequest<Meal[]>(url);
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Something went wrong',
+      };
+    }
+  }
+
+  // Cart related methods
+  static async getCart(): Promise<ApiResponse<Cart>> {
+    return await this.authenticatedRequest<Cart>('/cart');
+  }
+
+  static async addToCart(mealId: number, quantity: number): Promise<ApiResponse<any>> {
+    return await this.authenticatedRequest('/cart/items', 'POST', { mealId, quantity });
+  }
+
+  static async updateCartItem(cartItemId: number, quantity: number): Promise<ApiResponse<any>> {
+    return await this.authenticatedRequest(`/cart/items/${cartItemId}`, 'PUT', { quantity });
+  }
+
+  static async removeFromCart(cartItemId: number): Promise<ApiResponse<any>> {
+    return await this.authenticatedRequest(`/cart/items/${cartItemId}`, 'DELETE');
   }
 
   // Helper method for authenticated requests

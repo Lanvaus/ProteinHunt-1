@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   FlatList,
   Image,
   Modal,
@@ -12,154 +14,269 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
+import { useCart } from '../context/CartContext';
+import ApiService from '../services/api-service';
 
-// Sample product data
-const productData = [
-  {
-    id: '1',
-    name: 'Grilled Paneer Cubes',
-    price: 90,
-    rating: 4.5,
-    protein: 25,
-    carbs: 15,
-    fat: 8,
-    image: { uri: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?q=80&w=2070' },
-    description: 'Fresh cottage cheese cubes grilled to perfection with herbs and spices, ideal for protein-rich diet.',
-  },
-  {
-    id: '2',
-    name: 'Grilled Chicken Bowl',
-    price: 120,
-    rating: 4.7,
-    protein: 30,
-    carbs: 20,
-    fat: 5,
-    image: { uri: 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?q=80&w=2070' },
-    description: 'Tender grilled chicken breast with mixed vegetables and brown rice. High in protein and perfect for muscle building.',
-  },
-  {
-    id: '3',
-    name: 'Protein Smoothie Bowl',
-    price: 95,
-    rating: 4.2,
-    protein: 18,
-    carbs: 22,
-    fat: 6,
-    image: { uri: 'https://images.unsplash.com/photo-1622484212850-eb596d769edc?q=80&w=1974' },
-    description: 'A refreshing blend of whey protein, berries, banana and almond milk topped with nuts and seeds.',
-  },
-  {
-    id: '4',
-    name: 'Quinoa Protein Salad',
-    price: 105,
-    rating: 4.3,
-    protein: 15,
-    carbs: 25,
-    fat: 7,
-    image: { uri: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070' },
-    description: 'Nutrient-rich quinoa with mixed vegetables, lean protein and a light vinaigrette dressing. Perfect for a healthy lunch.',
-  },
-  {
-    id: '5',
-    name: 'Egg White Omelette',
-    price: 85,
-    rating: 4.4,
-    protein: 22,
-    carbs: 8,
-    fat: 4,
-    image: { uri: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?q=80&w=2020' },
-    description: 'Fluffy egg white omelette filled with spinach, tomatoes and low-fat cheese. High protein, low carb option.',
-  },
-  {
-    id: '6',
-    name: 'Tofu Stir Fry Bowl',
-    price: 95,
-    rating: 4.1,
-    protein: 20,
-    carbs: 18,
-    fat: 10,
-    image: { uri: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=2080' },
-    description: 'Plant-based protein from tofu stir-fried with colorful vegetables in a light soy sauce.',
-  },
-];
+// Define interface for meal data
+interface Meal {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+  servingWeightGrams: number;
+  caloriesKcal: number;
+  nutritionValues: {
+    [key: string]: number;
+  };
+  price: number;
+  mealType: string;
+  mealCategory: {
+    id: number;
+    name: string;
+    imageUrl: string;
+  };
+  vegetarian: boolean;
+}
 
 const ProteinPicksScreen = () => {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const initialMealType = params.mealType as string;
+  const screenTitle = params.title as string || 'Protein Picks';
+  
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [cartItems, setCartItems] = useState([]);
+  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
+  const { cart, loading: cartLoading, addToCart, updateQuantity, getItemQuantity } = useCart();
   const [activeFilter, setActiveFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleAddToCart = (product) => {
-    setCartItems([...cartItems, product]);
+  // Filter mappings
+  const filterMapping: Record<string, string | null> = {
+    'All': initialMealType || null, // Default to initial meal type for "All"
+    'Low Fat': 'PROTEIN_PICK',
+    'High Protein': 'POWER_COMBO',
+    'Breakfast': initialMealType || null, // Default to initial meal type for "Breakfast"
   };
 
-  const handleOpenProductModal = (product) => {
-    setSelectedProduct(product);
+  // Fetch meals on component mount with initial meal type
+  useEffect(() => {
+    fetchMeals(initialMealType ? 'All' : undefined);
+  }, [initialMealType]);
+
+  // Fetch meals with optional filtering
+  const fetchMeals = async (filterType?: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // If we have an initial meal type and are using the "All" filter,
+      // we still want to filter by the initial meal type
+      let mealTypeToUse = filterType ? filterMapping[filterType] : null;
+      
+      // If no specific filter but we have an initial meal type, use that
+      if (!mealTypeToUse && initialMealType) {
+        mealTypeToUse = initialMealType;
+      }
+      
+      const response = await ApiService.getMeals(mealTypeToUse || undefined);
+      
+      if (response.success && response.data) {
+        setMeals(response.data);
+      } else {
+        setError(response.error || 'Failed to fetch meals');
+      }
+    } catch (error) {
+      setError('An unexpected error occurred');
+      console.error('Error fetching meals:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle filter changes
+  const handleFilterChange = (filter: string) => {
+    setActiveFilter(filter);
+    fetchMeals(filter);
+  };
+
+  // Handle adding meal to cart
+  const handleAddToCart = async (meal: Meal) => {
+    const currentQuantity = getItemQuantity(meal.id);
+    
+    if (currentQuantity > 0) {
+      // Find the cart item to update
+      const cartItem = cart?.items.find(item => item.mealId === meal.id);
+      if (cartItem) {
+        await updateQuantity(cartItem.cartItemId, cartItem.quantity + 1);
+      }
+    } else {
+      // Add new item
+      await addToCart(meal.id, 1);
+    }
+  };
+
+  // Handle opening meal details modal
+  const handleOpenMealModal = (meal: Meal) => {
+    setSelectedMeal(meal);
     setModalVisible(true);
   };
 
-  const renderProductItem = ({ item }) => (
-    <View style={styles.productCard}>
-      <TouchableOpacity 
-        style={styles.productCardInner}
-        onPress={() => handleOpenProductModal(item)}
-      >
-        <Image source={item.image} style={styles.productImage} />
-        <View style={styles.productDetails}>
-          <View style={styles.productHeader}>
-            <Text style={styles.productName}>{item.name}</Text>
-            <View style={styles.ratingContainer}>
-              <Ionicons name="star" size={14} color="#FFD700" />
-              <Text style={styles.ratingText}>{item.rating}</Text>
-            </View>
-          </View>
-          <Text style={styles.productPrice}>₹ {item.price}</Text>
+  // Filter meals based on search query (client-side filtering)
+  const filteredMeals = searchQuery 
+    ? meals.filter(meal => 
+        meal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        meal.description.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : meals;
 
-          <View style={styles.nutritionInfo}>
-            <View style={styles.nutritionItem}>
-              <View style={styles.nutritionBarContainer}>
-                <View style={[styles.nutritionBar, styles.proteinBar]} />
-              </View>
-              <View style={styles.nutritionTextContainer}>
-                <Text style={styles.nutritionValue}>{item.protein}g</Text>
-                <Text style={[styles.nutritionLabel, styles.proteinLabel]}>Protein</Text>
-              </View>
+  // Render meal item
+  const renderMealItem = ({ item }: { item: Meal }) => {
+    // Extract protein, carbs, and fat from nutritionValues with correct key names
+    const protein = item.nutritionValues?.['Protein'] || 0;
+    const carbs = item.nutritionValues?.['Carbohydrates'] || 0;
+    const fat = item.nutritionValues?.['Fats'] || 0;
+    const itemQuantity = getItemQuantity(item.id);
+    
+    return (
+      <View style={styles.productCard}>
+        <TouchableOpacity 
+          style={styles.productCardInner}
+          onPress={() => handleOpenMealModal(item)}
+        >
+          <Image 
+            source={{ uri: item.imageUrl }} 
+            style={styles.productImage}
+            // defaultSource={require('../assets/images/placeholder.png')}
+            onError={(e) => console.log('Image failed to load:', e.nativeEvent.error)}
+          />
+          <View style={styles.productDetails}>
+            <View style={styles.productHeader}>
+              <Text style={styles.productName}>{item.name}</Text>
+              {item.vegetarian && (
+                <View style={styles.vegBadge}>
+                  <Text style={styles.vegBadgeText}>VEG</Text>
+                </View>
+              )}
             </View>
-            <View style={styles.nutritionItem}>
-              <View style={styles.nutritionBarContainer}>
-                <View style={[styles.nutritionBar, styles.carbsBar]} />
+            <Text style={styles.productPrice}>₹ {item.price}</Text>
+
+            <View style={styles.nutritionInfo}>
+              <View style={styles.nutritionItem}>
+                <View style={styles.nutritionBarContainer}>
+                  <View 
+                    style={[
+                      styles.nutritionBar, 
+                      styles.proteinBar,
+                      { height: `${Math.min(100, (protein / 30) * 100)}%` }
+                    ]} 
+                  />
+                </View>
+                <View style={styles.nutritionTextContainer}>
+                  <Text style={styles.nutritionValue}>{protein}g</Text>
+                  <Text style={[styles.nutritionLabel, styles.proteinLabel]}>Protein</Text>
+                </View>
               </View>
-              <View style={styles.nutritionTextContainer}>
-                <Text style={styles.nutritionValue}>{item.carbs}g</Text>
-                <Text style={[styles.nutritionLabel, styles.carbsLabel]}>Carbs</Text>
+              <View style={styles.nutritionItem}>
+                <View style={styles.nutritionBarContainer}>
+                  <View 
+                    style={[
+                      styles.nutritionBar, 
+                      styles.carbsBar,
+                      { height: `${Math.min(100, (carbs / 30) * 100)}%` }
+                    ]} 
+                  />
+                </View>
+                <View style={styles.nutritionTextContainer}>
+                  <Text style={styles.nutritionValue}>{carbs}g</Text>
+                  <Text style={[styles.nutritionLabel, styles.carbsLabel]}>Carbs</Text>
+                </View>
               </View>
-            </View>
-            <View style={styles.nutritionItem}>
-              <View style={styles.nutritionBarContainer}>
-                <View style={[styles.nutritionBar, styles.fatBar]} />
-              </View>
-              <View style={styles.nutritionTextContainer}>
-                <Text style={styles.nutritionValue}>{item.fat}g</Text>
-                <Text style={[styles.nutritionLabel, styles.fatLabel]}>Fat</Text>
+              <View style={styles.nutritionItem}>
+                <View style={styles.nutritionBarContainer}>
+                  <View 
+                    style={[
+                      styles.nutritionBar, 
+                      styles.fatBar,
+                      { height: `${Math.min(100, (fat / 20) * 100)}%` }
+                    ]} 
+                  />
+                </View>
+                <View style={styles.nutritionTextContainer}>
+                  <Text style={styles.nutritionValue}>{fat}g</Text>
+                  <Text style={[styles.nutritionLabel, styles.fatLabel]}>Fat</Text>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
-      
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          style={styles.addButton}
-          onPress={() => handleAddToCart(item)}
-        >
-          <Text style={styles.addButtonText}>ADD</Text>
         </TouchableOpacity>
+        
+        <View style={styles.buttonContainer}>
+          {itemQuantity > 0 ? (
+            <View style={styles.quantityContainer}>
+              <TouchableOpacity 
+                style={styles.quantityButton}
+                onPress={async () => {
+                  const cartItem = cart?.items.find(cartItem => cartItem.mealId === item.id);
+                  if (cartItem) {
+                    if (cartItem.quantity > 1) {
+                      await updateQuantity(cartItem.cartItemId, cartItem.quantity - 1);
+                    } else {
+                      // Show confirmation before removing last item
+                      Alert.alert(
+                        'Remove Item',
+                        `Remove ${item.name} from your cart?`,
+                        [
+                          { text: 'Cancel', style: 'cancel' },
+                          { 
+                            text: 'Remove', 
+                            style: 'destructive',
+                            onPress: async () => {
+                              const cartItem = cart?.items.find(ci => ci.mealId === item.id);
+                              if (cartItem) {
+                                await ApiService.removeFromCart(cartItem.cartItemId);
+                              }
+                            }
+                          }
+                        ]
+                      );
+                    }
+                  }
+                }}
+              >
+                <Ionicons name="remove" size={16} color="white" />
+              </TouchableOpacity>
+              
+              <Text style={styles.quantityText}>{itemQuantity}</Text>
+              
+              <TouchableOpacity 
+                style={styles.quantityButton}
+                onPress={async () => {
+                  const cartItem = cart?.items.find(cartItem => cartItem.mealId === item.id);
+                  if (cartItem) {
+                    await updateQuantity(cartItem.cartItemId, cartItem.quantity + 1);
+                  }
+                }}
+              >
+                <Ionicons name="add" size={16} color="white" />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity 
+              style={styles.addButton}
+              onPress={() => handleAddToCart(item)}
+            >
+              <Text style={styles.addButtonText}>ADD</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const filters = ['All', 'Low Fat', 'High Protein', 'Breakfast'];
 
@@ -175,7 +292,7 @@ const ProteinPicksScreen = () => {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Protein Picks</Text>
+        <Text style={styles.headerTitle}>{screenTitle}</Text>
         <View style={{width: 24}} />
       </View>
 
@@ -186,7 +303,14 @@ const ProteinPicksScreen = () => {
           style={styles.searchInput}
           placeholder="Search for Protein Products"
           placeholderTextColor="#999"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
         />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <Ionicons name="close-circle" size={20} color="#999" />
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Filter Tabs */}
@@ -204,7 +328,7 @@ const ProteinPicksScreen = () => {
                 styles.filterTab,
                 activeFilter === filter && styles.activeFilterTab
               ]}
-              onPress={() => setActiveFilter(filter)}
+              onPress={() => handleFilterChange(filter)}
             >
               <Text style={[
                 styles.filterText,
@@ -217,18 +341,46 @@ const ProteinPicksScreen = () => {
         </ScrollView>
       </View>
 
-      {/* Product List */}
-      <FlatList
-        data={productData}
-        renderItem={renderProductItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={[styles.productList, { paddingTop: 0 }]} // reduce top padding if any
-      />
+      {/* Loading, Error, or Content */}
+      {isLoading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#18853B" />
+          <Text style={styles.loaderText}>Loading meals...</Text>
+        </View>
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle-outline" size={48} color="#FF3B30" />
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity 
+            style={styles.retryButton}
+            onPress={() => fetchMeals(filterMapping[activeFilter] || undefined)}
+          >
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      ) : filteredMeals.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Ionicons name="nutrition-outline" size={48} color="#999" />
+          <Text style={styles.emptyText}>
+            {searchQuery ? 'No meals match your search' : 'No meals available'}
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredMeals}
+          renderItem={renderMealItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.productList}
+        />
+      )}
 
       {/* Cart Summary Bar */}
-      {cartItems.length > 0 && (
-        <TouchableOpacity style={styles.cartBar}>
-          <Text style={styles.cartItemsCount}>{cartItems.length} Item added</Text>
+      {cart && cart.totalItems > 0 && (
+        <TouchableOpacity 
+          style={styles.cartBar}
+          onPress={() => router.push('/cart')}
+        >
+          <Text style={styles.cartItemsCount}>{cart.totalItems} Item{cart.totalItems > 1 ? 's' : ''} added</Text>
           <View style={styles.cartAction}>
             <Text style={styles.cartActionText}>Go to Cart</Text>
             <Ionicons name="chevron-forward" size={20} color="#FFF" />
@@ -236,7 +388,7 @@ const ProteinPicksScreen = () => {
         </TouchableOpacity>
       )}
 
-      {/* Product Detail Modal */}
+      {/* Meal Detail Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -253,26 +405,48 @@ const ProteinPicksScreen = () => {
             </TouchableOpacity>
             
             <Text style={styles.modalTitle}>
-              {selectedProduct?.name}
+              {selectedMeal?.name}
             </Text>
             
             <Image 
-              source={selectedProduct?.image}
+              source={selectedMeal?.imageUrl ? { uri: selectedMeal.imageUrl } : null}
               style={styles.modalImage}
+              // defaultSource={require('../assets/images/placeholder.png')}
             />
             
+            {selectedMeal?.vegetarian && (
+              <View style={styles.vegBadgeModal}>
+                <Text style={styles.vegBadgeText}>Vegetarian</Text>
+              </View>
+            )}
+            
             <Text style={styles.modalDescription}>
-              {selectedProduct?.description}
+              {selectedMeal?.description}
             </Text>
+            
+            <View style={styles.nutritionInfoModal}>
+              <View style={styles.nutritionItemModal}>
+                <Text style={styles.nutritionLabelModal}>Calories</Text>
+                <Text style={styles.nutritionValueModal}>{selectedMeal?.caloriesKcal} kcal</Text>
+              </View>
+              <View style={styles.nutritionItemModal}>
+                <Text style={styles.nutritionLabelModal}>Protein</Text>
+                <Text style={styles.nutritionValueModal}>{selectedMeal?.nutritionValues?.Protein || 0}g</Text>
+              </View>
+              <View style={styles.nutritionItemModal}>
+                <Text style={styles.nutritionLabelModal}>Carbs</Text>
+                <Text style={styles.nutritionValueModal}>{selectedMeal?.nutritionValues?.Carbohydrates || 0}g</Text>
+              </View>
+            </View>
             
             <TouchableOpacity 
               style={styles.modalAddButton}
               onPress={() => {
-                handleAddToCart(selectedProduct);
+                if (selectedMeal) handleAddToCart(selectedMeal);
                 setModalVisible(false);
               }}
             >
-              <Text style={styles.modalAddButtonText}>ADD</Text>
+              <Text style={styles.modalAddButtonText}>ADD TO CART · ₹{selectedMeal?.price}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -562,6 +736,111 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '700',
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loaderText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  errorText: {
+    fontSize: 18,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 16,
+    marginBottom: 24,
+  },
+  retryButton: {
+    backgroundColor: '#18853B',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 16,
+  },
+  vegBadge: {
+    backgroundColor: '#E5FFF4',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  vegBadgeText: {
+    color: '#4CAF50',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  vegBadgeModal: {
+    backgroundColor: '#E5FFF4',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginBottom: 16,
+  },
+  nutritionInfoModal: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginVertical: 16,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#EEEEEE',
+    paddingVertical: 16,
+  },
+  nutritionItemModal: {
+    alignItems: 'center',
+  },
+  nutritionLabelModal: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  nutritionValueModal: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4CAF50',
+    borderRadius: 6,
+  },
+  quantityButton: {
+    width: 28,
+    height: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quantityText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 14,
+    paddingHorizontal: 8,
   },
 });
 

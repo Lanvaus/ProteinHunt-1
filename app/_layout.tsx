@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from '../context/AuthContext';
+import { CartProvider } from '../context/CartContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -22,15 +23,17 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <Stack initialRouteName="onboarding" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="onboarding" />
-          <Stack.Screen name="auth-choice" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="home" />
-          <Stack.Screen name="verify-otp" />
-          <Stack.Screen name="protein-picks" />
-          <Stack.Screen name="+not-found" />
-        </Stack>
+        <CartProvider>
+          <Stack initialRouteName="onboarding" screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="onboarding" />
+            <Stack.Screen name="auth-choice" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="home" />
+            <Stack.Screen name="verify-otp" />
+            <Stack.Screen name="protein-picks" />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </CartProvider>
       </AuthProvider>
       <StatusBar style="auto" />
     </ThemeProvider>
