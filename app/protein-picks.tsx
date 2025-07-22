@@ -3,16 +3,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    FlatList,
-    Image,
-    Modal,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Image,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 // Sample product data
@@ -173,37 +173,39 @@ const ProteinPicksScreen = () => {
       </View>
 
       {/* Filter Tabs */}
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false} 
-        style={styles.filtersContainer}
-        contentContainerStyle={styles.filtersContent}
-      >
-        {filters.map((filter) => (
-          <TouchableOpacity 
-            key={filter} 
-            style={[
-              styles.filterTab,
-              activeFilter === filter && styles.activeFilterTab
-            ]}
-            onPress={() => setActiveFilter(filter)}
-          >
-            <Text style={[
-              styles.filterText,
-              activeFilter === filter && styles.activeFilterText
-            ]}>
-              {filter}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <View style={styles.filtersWrapper}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={[styles.filtersContainer, { marginBottom: 28 }]}
+          contentContainerStyle={[styles.filtersContent, { paddingBottom: 12 }]}
+        >
+          {filters.map((filter) => (
+            <TouchableOpacity 
+              key={filter} 
+              style={[
+                styles.filterTab,
+                activeFilter === filter && styles.activeFilterTab
+              ]}
+              onPress={() => setActiveFilter(filter)}
+            >
+              <Text style={[
+                styles.filterText,
+                activeFilter === filter && styles.activeFilterText
+              ]}>
+                {filter}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* Product List */}
       <FlatList
         data={productData}
         renderItem={renderProductItem}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.productList}
+        contentContainerStyle={[styles.productList, { paddingTop: 0 }]} // reduce top padding if any
       />
 
       {/* Cart Summary Bar */}
@@ -302,6 +304,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 16,
     color: '#333',
+  },
+  filtersWrapper: {
+    backgroundColor: 'transparent',
+    zIndex: 10,
+    elevation: 10,
   },
   filtersContainer: {
     marginVertical: 8,
