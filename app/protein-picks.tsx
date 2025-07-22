@@ -120,27 +120,44 @@ const ProteinPicksScreen = () => {
 
           <View style={styles.nutritionInfo}>
             <View style={styles.nutritionItem}>
-              <Text style={styles.nutritionValue}>{item.protein}g</Text>
-              <Text style={[styles.nutritionLabel, styles.proteinLabel]}>Protein</Text>
+              <View style={styles.nutritionBarContainer}>
+                <View style={[styles.nutritionBar, styles.proteinBar]} />
+              </View>
+              <View style={styles.nutritionTextContainer}>
+                <Text style={styles.nutritionValue}>{item.protein}g</Text>
+                <Text style={[styles.nutritionLabel, styles.proteinLabel]}>Protein</Text>
+              </View>
             </View>
             <View style={styles.nutritionItem}>
-              <Text style={styles.nutritionValue}>{item.carbs}g</Text>
-              <Text style={[styles.nutritionLabel, styles.carbsLabel]}>Carbs</Text>
+              <View style={styles.nutritionBarContainer}>
+                <View style={[styles.nutritionBar, styles.carbsBar]} />
+              </View>
+              <View style={styles.nutritionTextContainer}>
+                <Text style={styles.nutritionValue}>{item.carbs}g</Text>
+                <Text style={[styles.nutritionLabel, styles.carbsLabel]}>Carbs</Text>
+              </View>
             </View>
             <View style={styles.nutritionItem}>
-              <Text style={styles.nutritionValue}>{item.fat}g</Text>
-              <Text style={[styles.nutritionLabel, styles.fatLabel]}>Fat</Text>
+              <View style={styles.nutritionBarContainer}>
+                <View style={[styles.nutritionBar, styles.fatBar]} />
+              </View>
+              <View style={styles.nutritionTextContainer}>
+                <Text style={styles.nutritionValue}>{item.fat}g</Text>
+                <Text style={[styles.nutritionLabel, styles.fatLabel]}>Fat</Text>
+              </View>
             </View>
           </View>
         </View>
       </TouchableOpacity>
       
-      <TouchableOpacity 
-        style={styles.addButton}
-        onPress={() => handleAddToCart(item)}
-      >
-        <Text style={styles.addButtonText}>ADD</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity 
+          style={styles.addButton}
+          onPress={() => handleAddToCart(item)}
+        >
+          <Text style={styles.addButtonText}>ADD</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -354,16 +371,16 @@ const styles = StyleSheet.create({
   },
   productCardInner: {
     flexDirection: 'row',
-    padding: 12,
+    padding: 16,
   },
   productImage: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 100,
     borderRadius: 12,
   },
   productDetails: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: 16,
     justifyContent: 'space-between',
   },
   productHeader: {
@@ -372,7 +389,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   productName: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '600',
     color: '#333',
     flex: 1,
@@ -392,18 +409,38 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   productPrice: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '600',
     color: '#333',
-    marginTop: 4,
+    marginTop: 8,
+    marginBottom: 12,
   },
   nutritionInfo: {
     flexDirection: 'row',
-    marginTop: 8,
+    justifyContent: 'space-between',
+    marginTop: 12,
+    marginRight: 10,
   },
   nutritionItem: {
-    marginRight: 15,
+    flexDirection: 'row',
     alignItems: 'center',
+    marginRight: 10,
+  },
+  nutritionBarContainer: {
+    height: 40,
+    width: 6,
+    backgroundColor: '#EEEEEE',
+    borderRadius: 3,
+    justifyContent: 'flex-end',
+    marginRight: 8,
+  },
+  nutritionBar: {
+    width: 6,
+    height: '80%', // This will be dynamically calculated in a real app
+    borderRadius: 3,
+  },
+  nutritionTextContainer: {
+    justifyContent: 'center',
   },
   nutritionValue: {
     fontSize: 14,
@@ -413,29 +450,34 @@ const styles = StyleSheet.create({
   nutritionLabel: {
     fontSize: 12,
     fontWeight: '500',
-    marginTop: 2,
   },
   proteinLabel: {
-    color: '#18853B',
+    color: '#4CAF50',
   },
   carbsLabel: {
-    color: '#FFB700',
+    color: '#FFC107',
   },
   fatLabel: {
-    color: '#FF5A5A',
+    color: '#F44336',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    paddingTop: 4,
   },
   addButton: {
-    backgroundColor: '#18853B',
-    paddingVertical: 10,
+    backgroundColor: '#4CAF50',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     alignItems: 'center',
-    marginHorizontal: 12,
-    marginBottom: 12,
-    borderRadius: 8,
+    borderRadius: 6,
   },
   addButtonText: {
     color: 'white',
     fontWeight: '600',
-    fontSize: 15,
+    fontSize: 12,
   },
   cartBar: {
     position: 'absolute',
