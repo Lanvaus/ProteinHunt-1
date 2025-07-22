@@ -115,7 +115,7 @@ const VerifyOTP = () => {
           });
           
           // Navigate to home screen
-          router.replace('/protein-picks');
+          router.replace('/home');
         } else {
           Alert.alert('Error', 'Authentication token not received');
         }

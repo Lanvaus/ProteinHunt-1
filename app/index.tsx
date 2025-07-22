@@ -9,7 +9,7 @@ export default function Index() {
 
   useEffect(() => {
     if (!loading) {
-      // If authenticated, go to protein-picks, otherwise go to auth-choice
+      // If authenticated, go to home, otherwise go to auth-choice
       if (isAuthenticated) {
         router.replace('/home');
       } else {

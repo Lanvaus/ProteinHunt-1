@@ -1,20 +1,164 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  Image,
+  Linking,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+import ApiService from '../services/api-service';
+import LocationService, { LocationPermissionStatus } from '../services/location-service';
+
+interface UserLocation {
+  latitude: number;
+  longitude: number;
+  address?: string;
+  timestamp: number;
+}
 
 const HomeScreen = () => {
   const router = useRouter();
+  const [location, setLocation] = useState<UserLocation | null>(null);
+  const [isDeliveryAvailable, setIsDeliveryAvailable] = useState<boolean | null>(null);
+  const [deliveryMessage, setDeliveryMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [permissionStatus, setPermissionStatus] = useState<LocationPermissionStatus>(
+    LocationPermissionStatus.UNDETERMINED
+  );
   
+  useEffect(() => {
+    checkLocationPermissionAndSetup();
+  }, []);
+  
+  const checkLocationPermissionAndSetup = async () => {
+    setIsLoading(true);
+    
+    // Check permission status first
+    const status = await LocationService.getPermissionStatus();
+    setPermissionStatus(status);
+    
+    if (status === LocationPermissionStatus.GRANTED) {
+      await checkLocationAndDelivery();
+    } else if (status === LocationPermissionStatus.UNDETERMINED) {
+      // If undetermined, request permission
+      const newStatus = await LocationService.requestPermissions();
+      setPermissionStatus(newStatus);
+      
+      if (newStatus === LocationPermissionStatus.GRANTED) {
+        await checkLocationAndDelivery();
+      } else {
+        setIsLoading(false);
+      }
+    } else {
+      // Permission already denied
+      setIsLoading(false);
+    }
+  };
+  
+  const checkLocationAndDelivery = async () => {
+    try {
+      // First, try to get cached location
+      let userLocation = await LocationService.getCachedLocation();
+      
+      // If no cached location, get current location
+      if (!userLocation) {
+        userLocation = await LocationService.getCurrentLocation();
+      }
+      
+      setLocation(userLocation);
+      
+      // If we have a location, check delivery availability
+      if (userLocation) {
+        await checkDeliveryAvailability(userLocation.latitude, userLocation.longitude);
+      }
+    } catch (error) {
+      console.error('Error in location setup:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRequestPermission = async () => {
+    const status = await LocationService.requestPermissions();
+    setPermissionStatus(status);
+    
+    if (status === LocationPermissionStatus.GRANTED) {
+      await checkLocationAndDelivery();
+    } else if (status === LocationPermissionStatus.DENIED) {
+      // Show an alert explaining why we need location and provide option to open settings
+      Alert.alert(
+        'Location Permission Required',
+        'We need your location to check if we can deliver to you. Please enable location permission in your device settings.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() }
+        ]
+      );
+    }
+  };
+  
+  const checkDeliveryAvailability = async (latitude: number, longitude: number) => {
+    try {
+      const response = await ApiService.checkDeliveryAvailability(latitude, longitude);
+      
+      if (response.success && response.data) {
+        setIsDeliveryAvailable(response.data.canDeliver);
+        setDeliveryMessage(response.data.message);
+        
+        // If delivery is not available, show a notification to the user
+        if (!response.data.canDeliver) {
+          Alert.alert(
+            'Delivery Not Available',
+            `We're sorry, but we don't deliver to your location yet. ${response.data.message}`,
+            [{ text: 'OK', style: 'default' }]
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error checking delivery availability:', error);
+    }
+  };
+  
+  const handleLocationPress = async () => {
+    if (permissionStatus !== LocationPermissionStatus.GRANTED) {
+      await handleRequestPermission();
+      return;
+    }
+    
+    // If permission is granted, refresh location
+    setIsLoading(true);
+    try {
+      const userLocation = await LocationService.getCurrentLocation();
+      if (userLocation) {
+        setLocation(userLocation);
+        await checkDeliveryAvailability(userLocation.latitude, userLocation.longitude);
+      }
+    } catch (error) {
+      console.error('Error updating location:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const renderLocationStatus = () => {
+    if (isLoading) {
+      return 'Getting location...';
+    }
+    
+    if (permissionStatus !== LocationPermissionStatus.GRANTED) {
+      return 'Location access required';
+    }
+    
+    return location?.address || 'Set your location';
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
@@ -24,18 +168,66 @@ const HomeScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header with Location */}
         <View style={styles.header}>
-          <View style={styles.locationContainer}>
-            <Ionicons name="location-outline" size={24} color="#18853B" />
+          <TouchableOpacity 
+            style={styles.locationContainer}
+            onPress={handleLocationPress}
+          >
+            <Ionicons 
+              name="location-outline" 
+              size={24} 
+              color={
+                permissionStatus !== LocationPermissionStatus.GRANTED
+                  ? "#FF8C00"
+                  : isDeliveryAvailable === false
+                  ? "#FF3B30"
+                  : "#18853B"
+              } 
+            />
             <View style={styles.locationTextContainer}>
               <Text style={styles.locationLabel}>Current location</Text>
-              <Text style={styles.locationValue}>Jl. Soekarno Hatta 15A...</Text>
+              <Text 
+                style={[
+                  styles.locationValue,
+                  permissionStatus !== LocationPermissionStatus.GRANTED && styles.warningLocation,
+                  isDeliveryAvailable === false && styles.unavailableLocation
+                ]}
+                numberOfLines={1}
+              >
+                {renderLocationStatus()}
+              </Text>
             </View>
             <Ionicons name="chevron-down" size={20} color="#333" />
-          </View>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.notificationButton}>
             <Ionicons name="notifications-outline" size={24} color="#333" />
           </TouchableOpacity>
         </View>
+
+        {/* Permission Required Banner */}
+        {permissionStatus !== LocationPermissionStatus.GRANTED && (
+          <TouchableOpacity 
+            style={styles.permissionBanner}
+            onPress={handleRequestPermission}
+          >
+            <Ionicons name="location-outline" size={20} color="#FF8C00" />
+            <Text style={styles.permissionBannerText}>
+              Location permission is required to check delivery availability
+            </Text>
+            <View style={styles.enableButton}>
+              <Text style={styles.enableButtonText}>Enable</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+
+        {/* Delivery Status Banner (only show if delivery is not available) */}
+        {permissionStatus === LocationPermissionStatus.GRANTED && isDeliveryAvailable === false && (
+          <View style={styles.deliveryBanner}>
+            <Ionicons name="alert-circle-outline" size={20} color="#FF3B30" />
+            <Text style={styles.deliveryBannerText}>
+              {deliveryMessage || "We don't deliver to this area yet"}
+            </Text>
+          </View>
+        )}
 
         {/* Promotional Banner */}
         <LinearGradient
@@ -146,7 +338,7 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-
+      
       {/* Navigation Bar */}
       <LinearGradient
         colors={['#FFFFFF', '#E8F5E9']}
@@ -211,11 +403,30 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '700',
   },
+  unavailableLocation: {
+    color: '#FF3B30',
+  },
   notificationButton: {
     padding: 10,
     backgroundColor: '#F0F9F4',
     borderRadius: 16,
     elevation: 2,
+  },
+  deliveryBanner: {
+    backgroundColor: '#FFEBEA',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginHorizontal: 16,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  deliveryBannerText: {
+    color: '#FF3B30',
+    fontSize: 14,
+    marginLeft: 8,
+    flex: 1,
   },
   banner: {
     borderRadius: 20,
@@ -517,6 +728,36 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
     marginBottom: 18,
+  },
+  permissionBanner: {
+    backgroundColor: '#FFF9E5',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginHorizontal: 16,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  permissionBannerText: {
+    color: '#FF8C00',
+    fontSize: 14,
+    marginLeft: 8,
+    flex: 1,
+  },
+  enableButton: {
+    backgroundColor: '#FF8C00',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  enableButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 12,
+  },
+  warningLocation: {
+    color: '#FF8C00',
   },
 });
 

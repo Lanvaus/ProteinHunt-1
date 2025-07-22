@@ -16,6 +16,14 @@ interface ValidateTokenResponse {
   roles: string[];
 }
 
+interface DeliveryCheckResponse {
+  canDeliver: boolean;
+  message: string;
+  serviceableKitchenId: number;
+  serviceableKitchenName: string;
+  distanceToKitchenKm: number;
+}
+
 class ApiService {
   static async sendOtp(phoneNumber: string): Promise<ApiResponse<any>> {
     try {
@@ -113,6 +121,37 @@ class ApiService {
 
       const data = await response.json();
       
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Something went wrong',
+      };
+    }
+  }
+
+  static async checkDeliveryAvailability(latitude: number, longitude: number): Promise<ApiResponse<DeliveryCheckResponse>> {
+    try {
+      const response = await fetch(`${BASE_URL}/location/check-delivery`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ latitude, longitude }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.message || 'Failed to check delivery availability',
+        };
+      }
+
       return {
         success: true,
         data,
