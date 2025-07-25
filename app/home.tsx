@@ -352,28 +352,28 @@ const HomeScreen = () => {
       {/* Navigation Bar */}
       <View style={styles.navigationContainer}>
         <LinearGradient
-          colors={['#FFFFFF', '#E8F5E9']}
+          colors={['#01893F', '#01893F']}
           style={styles.navigationBar}
         >
           <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="home" size={24} color="#18853B" />
+            <Ionicons name="home" size={24} color="#FFFFFF" />
             <View style={styles.activeNavDot} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="person-outline" size={24} color="#999" />
+            <Ionicons name="person-outline" size={24} color="#FFFFFF" />
           </TouchableOpacity>
           <View style={styles.navCenterItemPlaceholder} />
           <TouchableOpacity 
             style={styles.navItem}
             onPress={() => router.push('/orders')}
           >
-            <Ionicons name="receipt-outline" size={24} color="#999" />
+            <Ionicons name="receipt-outline" size={24} color="#FFFFFF" />
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.navItem}
             onPress={() => router.push('/cart')}
           >
-            <Ionicons name="cart-outline" size={24} color="#999" />
+            <Ionicons name="cart-outline" size={24} color="#FFFFFF" />
             {cart && cart.totalItems > 0 && (
               <View style={styles.cartBadge}>
                 <Text style={styles.cartBadgeText}>
@@ -726,15 +726,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#EEEEEE',
+    borderTopColor: 'rgba(255,255,255,0.2)',
     paddingHorizontal: 10,
-    shadowColor: '#18853B',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.10,
-    shadowRadius: 8,
+    shadowOpacity: 0.15,
+    
     elevation: 8,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+ 
     backgroundColor: 'transparent',
   },
   navItem: {
@@ -748,7 +747,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#18853B',
+    backgroundColor: '#FFFFFF',
     position: 'absolute',
     bottom: 12,
   },
