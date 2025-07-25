@@ -166,7 +166,7 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={['#F5F5F5', '#E8F5E9']}
+        colors={['#FFFFFF', '#FFFFFF']}
         style={StyleSheet.absoluteFill}
       />
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -338,19 +338,19 @@ const HomeScreen = () => {
         </View>
 
         {/* Feature Cards */}
-        <View style={styles.featureCardsContainer}>
-          <TouchableOpacity style={styles.featureCard}>
+        <View style={styles.featureCardsRow}>
+          <TouchableOpacity style={[styles.featureCard, styles.featureCardLeft]}>
             <Image
               source={require('../assets/images/diet-plan.png')}
               style={styles.featureImage}
             />
             <View style={styles.featureTextContainer}>
               <Text style={styles.featureTitle}>Diet Plan</Text>
-              <Text style={styles.featureDescription}>Upload your diet or choose a curated one</Text>
+              <Text style={styles.featureDescription}>Upload diet</Text>
             </View>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.featureCard}>
+          <TouchableOpacity style={[styles.featureCard, styles.featureCardRight]}>
             <Image
               source={require('../assets/images/build-a-bowl.png')}
               style={styles.featureImage}
@@ -712,25 +712,34 @@ const styles = StyleSheet.create({
     marginRight: 30,
     marginBottom: 5,
   },
-  featureCardsContainer: {
+  featureCardsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'stretch',
     paddingHorizontal: 18,
     marginTop: 16,
     marginBottom: 80,
   },
   featureCard: {
-    width: '48%',
-    backgroundColor: '#E5FFF4',
+    flex: 1,
     borderRadius: 18,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    marginHorizontal: 4,
+    minWidth: 0,
+    maxWidth: '50%',
     shadowColor: '#18853B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.10,
     shadowRadius: 6,
     elevation: 6,
+  },
+  featureCardLeft: {
+    backgroundColor: '#E5FFF4',
+  },
+  featureCardRight: {
+    backgroundColor: '#E7FFE8',
   },
   featureTextContainer: {
     marginLeft: 10,
@@ -739,7 +748,7 @@ const styles = StyleSheet.create({
   featureTitle: {
     fontSize: 17,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#1D1D21',
     marginBottom: 6,
   },
   featureDescription: {
