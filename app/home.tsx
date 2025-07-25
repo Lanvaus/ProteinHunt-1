@@ -623,7 +623,7 @@ const styles = StyleSheet.create({
   },
   categorySubtitle: {
     color: 'white',
-    fontSize: 13,
+    fontSize: 8,
     opacity: 0.85,
   },
   nutritionistCard: {
