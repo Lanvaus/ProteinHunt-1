@@ -669,7 +669,7 @@ const styles = StyleSheet.create({
   nutritionistTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#1D1D21',
     marginBottom: 10,
   },
   bookButton: {
