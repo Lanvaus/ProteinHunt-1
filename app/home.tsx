@@ -332,7 +332,7 @@ const HomeScreen = () => {
           <View style={styles.nutritionistImageWrapper}>
             <Image
               source={require('../assets/images/nutritionist.png')}
-              style={styles.nutritionistImage}
+              style={styles.nutritionistImageEdge}
             />
           </View>
         </View>
@@ -692,21 +692,25 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   nutritionistImageWrapper: {
-    // backgroundColor: '#fff',
     borderRadius: 50,
-    padding: 4,
+    padding: 0,
+    marginRight: -16,
+    marginBottom: -16, // add this to touch bottom edge
+    alignSelf: 'flex-end',
     shadowColor: '#FFD700',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.10,
     shadowRadius: 6,
     elevation: 6,
   },
-  nutritionistImage: {
+  nutritionistImageEdge: {
     width: 90,
     height: 110,
     resizeMode: 'contain',
     borderRadius: 45,
     transform: [{ scale: 1.9 }],
+    marginRight: 30,
+    marginBottom: 0,
   },
   featureCardsContainer: {
     flexDirection: 'row',
