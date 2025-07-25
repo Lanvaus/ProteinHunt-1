@@ -710,7 +710,7 @@ const styles = StyleSheet.create({
     borderRadius: 45,
     transform: [{ scale: 1.9 }],
     marginRight: 30,
-    marginBottom: 0,
+    marginBottom: 5,
   },
   featureCardsContainer: {
     flexDirection: 'row',
