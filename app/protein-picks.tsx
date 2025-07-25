@@ -144,6 +144,12 @@ const ProteinPicksScreen = () => {
     const fat = item.nutritionValues?.['Fats'] || 0;
     const itemQuantity = getItemQuantity(item.id);
     
+    // Calculate bar heights in pixels (max 40px for visual consistency)
+    const maxBarHeight = 40;
+    const proteinBarHeight = Math.min(maxBarHeight, (protein / 30) * maxBarHeight);
+    const carbsBarHeight = Math.min(maxBarHeight, (carbs / 30) * maxBarHeight);
+    const fatBarHeight = Math.min(maxBarHeight, (fat / 20) * maxBarHeight);
+    
     return (
       <View style={styles.productCard}>
         <TouchableOpacity 
@@ -174,7 +180,7 @@ const ProteinPicksScreen = () => {
                     style={[
                       styles.nutritionBar, 
                       styles.proteinBar,
-                      { height: `${Math.min(100, (protein / 30) * 100)}%` }
+                      { height: proteinBarHeight }
                     ]} 
                   />
                 </View>
@@ -189,7 +195,7 @@ const ProteinPicksScreen = () => {
                     style={[
                       styles.nutritionBar, 
                       styles.carbsBar,
-                      { height: `${Math.min(100, (carbs / 30) * 100)}%` }
+                      { height: carbsBarHeight }
                     ]} 
                   />
                 </View>
@@ -204,7 +210,7 @@ const ProteinPicksScreen = () => {
                     style={[
                       styles.nutritionBar, 
                       styles.fatBar,
-                      { height: `${Math.min(100, (fat / 20) * 100)}%` }
+                      { height: fatBarHeight }
                     ]} 
                   />
                 </View>
@@ -610,11 +616,21 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     justifyContent: 'flex-end',
     marginRight: 8,
+    overflow: 'hidden', // Ensure bars don't overflow
   },
   nutritionBar: {
     width: 6,
-    height: '80%', // This will be dynamically calculated in a real app
     borderRadius: 3,
+    // Remove height: '80%' here, height is set inline
+  },
+  proteinBar: {
+    backgroundColor: '#4CAF50',
+  },
+  carbsBar: {
+    backgroundColor: '#FFC107',
+  },
+  fatBar: {
+    backgroundColor: '#F44336',
   },
   nutritionTextContainer: {
     justifyContent: 'center',
