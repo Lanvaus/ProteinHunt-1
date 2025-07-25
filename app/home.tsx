@@ -235,7 +235,7 @@ const HomeScreen = () => {
 
         {/* Promotional Banner */}
         <LinearGradient
-          colors={['#4FAF5A', '#18853B']}
+          colors={['#5DCB6A', '#4FAF5A']}
           start={[0, 0]}
           end={[1, 1]}
           style={styles.banner}
