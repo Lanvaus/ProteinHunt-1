@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   header: {
-    backgroundColor: '#18853B',
+    backgroundColor: '#009944',
     paddingTop: 60,
     paddingBottom: 15,
     flexDirection: 'row',
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   },
   resendText: {
     textAlign: 'center',
-    color: '#18853B',
+    color: '#009944',
     fontWeight: '500',
     marginBottom: 40,
   },
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   confirmButton: {
-    backgroundColor: '#18853B',
+    backgroundColor: '#009944',
     borderRadius: 10,
     paddingVertical: 16,
     alignItems: 'center',
