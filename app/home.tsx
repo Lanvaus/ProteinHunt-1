@@ -241,22 +241,27 @@ const HomeScreen = () => {
           style={styles.banner}
         >
           <View style={styles.bannerContent}>
-            <View style={styles.bannerTextContainer}>
-              <Text style={styles.bannerTitle}>
-                Claim your {'\n'} discount 30%  {'\n'} daily now!
-              </Text>
-              <TouchableOpacity style={styles.orderButton}>
-                <Text style={styles.orderButtonText}>Order now</Text>
-              </TouchableOpacity>
+            {/* Left: Text */}
+            <View style={styles.bannerTextHalf}>
+              <View style={styles.bannerTextContainer}>
+                <Text style={styles.bannerTitle}>
+                  Claim your {'\n'} discount 30%  {'\n'} daily now!
+                </Text>
+                <TouchableOpacity style={styles.orderButton}>
+                  <Text style={styles.orderButtonText}>Order now</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.bannerImageWrapper}>
+            {/* Right: Image */}
+            <View style={styles.bannerImageHalf}>
               <Image
                 source={require('../assets/images/protein-bowl.png')}
-                style={styles.bannerImage}
+                style={styles.bannerImageFill}
               />
             </View>
           </View>
-          <View style={styles.bannerIndicators}>
+          {/* Dots: bottom center */}
+          <View style={styles.bannerIndicatorsBottom}>
             <View style={[styles.indicator, styles.activeIndicator]} />
             <View style={styles.indicator} />
             <View style={styles.indicator} />
@@ -464,55 +469,55 @@ const styles = StyleSheet.create({
   banner: {
     borderRadius: 20,
     margin: 16,
-    padding: 16,
+    padding: 0,
     overflow: 'hidden',
     shadowColor: '#4FAF5A',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.18,
     shadowRadius: 8,
     elevation: 8,
+    height: 120, // decreased height
   },
   bannerContent: {
     flexDirection: 'row',
+    height: '100%',
+  },
+  bannerImageHalf: {
+    width: '50%',
+    height: '100%',
+    overflow: 'hidden',
+  },
+  bannerImageFill: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  bannerTextHalf: {
+    width: '50%',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
+    paddingVertical: 10,
+    paddingRight: 12,
+    height: '100%',
   },
   bannerTextContainer: {
-    flex: 1,
-    paddingRight: 10,
-    justifyContent: 'center',
+    alignItems: 'flex-end',
   },
   bannerTitle: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 12,
+    marginBottom: 8,
     letterSpacing: 0.5,
-  },
-  bannerImageWrapper: {
-    // backgroundColor: '#fff',
-    borderRadius: 60,
-    padding: 15,
-    shadowColor: '#4FAF5A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 6,
-    transform: [{ scale: 1.6 }],
-  },
-  bannerImage: {
-    width: 110,
-    height: 110,
-    resizeMode: 'contain',
-    borderRadius: 55,
+    textAlign: 'right',
   },
   orderButton: {
     backgroundColor: '#fff',
     borderRadius: 22,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignSelf: 'flex-start',
-    marginTop: 4,
+    paddingVertical: 7,
+    paddingHorizontal: 16,
+    alignSelf: 'flex-end',
+    marginTop: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
@@ -522,25 +527,20 @@ const styles = StyleSheet.create({
   orderButtonText: {
     color: '#18853B',
     fontWeight: '700',
-    fontSize: 15,
+    fontSize: 13,
     letterSpacing: 0.2,
   },
-  bannerIndicators: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 8,
-  },
   indicator: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: '#FCFCFB',
-    marginHorizontal: 4,
+    marginHorizontal: 2,
   },
   activeIndicator: {
     backgroundColor: '#FDBF0A',
-   width: 10,
-    height: 10,
+    width: 8,
+    height: 8,
     borderColor: '#18853B',
   },
   categoriesHeader: {
@@ -830,6 +830,14 @@ const styles = StyleSheet.create({
   },
   warningLocation: {
     color: '#FF8C00',
+  },
+  bannerIndicatorsBottom: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: -15,
+    marginBottom: 8,
+    width: '100%',
   },
 });
 
