@@ -645,7 +645,7 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   addButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#01893F',
     paddingVertical: 6,
     paddingHorizontal: 12,
     alignItems: 'center',
@@ -729,7 +729,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalAddButton: {
-    backgroundColor: '#18853B',
+    backgroundColor: '#01893F',
     paddingVertical: 14,
     paddingHorizontal: 60,
     borderRadius: 12,
@@ -830,7 +830,7 @@ const styles = StyleSheet.create({
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#01893F',
     borderRadius: 6,
   },
   quantityButton: {
