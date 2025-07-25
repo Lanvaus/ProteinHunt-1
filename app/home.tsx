@@ -234,16 +234,17 @@ const HomeScreen = () => {
         )}
 
         {/* Promotional Banner */}
-        <LinearGradient
-          colors={['#5DCB6A', '#4FAF5A']}
-          start={[0, 0]}
-          end={[1, 1]}
-          style={styles.banner}
-        >
+        <View style={styles.banner}>
+          <Image
+            source={require('../assets/images/promo.png')}
+            style={styles.bannerBgImage}
+          />
+          {/* Overlay color */}
+          <View style={styles.bannerOverlay} />
           <View style={styles.bannerContent}>
             {/* Left: Text */}
             <View style={styles.bannerTextHalf}>
-              <View >
+              <View>
                 <Text style={styles.bannerTitle}>
                   Claim your {'\n'} discount 30%  {'\n'} daily now!
                 </Text>
@@ -266,7 +267,7 @@ const HomeScreen = () => {
             <View style={styles.indicator} />
             <View style={styles.indicator} />
           </View>
-        </LinearGradient>
+        </View>
 
         {/* Top Categories */}
         <View style={styles.categoriesHeader}>
@@ -476,11 +477,29 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.18,
     shadowRadius: 8,
     elevation: 8,
-    height: 120, // decreased height
+    height: 120,
+    position: 'relative',
+    backgroundColor: '#5DCB6A',
+  },
+  bannerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#4FAF5A',
+    opacity: 0.55, // adjust for desired overlay strength
+    borderRadius: 20,
+    zIndex: 1,
+  },
+  bannerBgImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    borderRadius: 20,
+    zIndex: 0,
   },
   bannerContent: {
     flexDirection: 'row',
     height: '100%',
+    zIndex: 2,
   },
   bannerImageHalf: {
     width: '50%',
