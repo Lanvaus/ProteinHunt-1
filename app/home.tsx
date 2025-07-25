@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { useCart } from '../context/CartContext';
 import ApiService from '../services/api-service';
 import LocationService, { LocationPermissionStatus } from '../services/location-service';
@@ -365,10 +366,22 @@ const HomeScreen = () => {
       
       {/* Navigation Bar */}
       <View style={styles.navigationContainer}>
-        <LinearGradient
-          colors={['#01893F', '#01893F']}
-          style={styles.navigationBar}
-        >
+        {/* SVG curved background */}
+        <View style={styles.navigationBarBg}>
+          <Svg
+            width="100%"
+            height={74}
+            viewBox="0 0 400 74"
+            style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}
+          >
+            <Path
+              // Less deep center curve for smaller gap
+              d="M0 0 H120 Q145 0 160 38 Q200 64 240 38 Q255 0 280 0 H400 V74 H0 Z"
+              fill="#01893F"
+            />
+          </Svg>
+        </View>
+        <View style={styles.navigationBarContent}>
           <TouchableOpacity style={styles.navItem}>
             <Ionicons name="home" size={24} color="#FFFFFF" />
             <View style={styles.activeNavDot} />
@@ -396,20 +409,14 @@ const HomeScreen = () => {
               </View>
             )}
           </TouchableOpacity>
-        </LinearGradient>
-        
-        {/* Floating center button with enhanced design */}
+        </View>
+        {/* Floating center button */}
         <View style={styles.floatingButtonContainer}>
-          <LinearGradient
-            colors={['#4FAF5A', '#18853B']}
-            style={styles.navCenterButton}
-            start={[0, 0]}
-            end={[1, 1]}
-          >
+          <View style={styles.navCenterButton}>
             <View style={styles.innerCircle}>
-              <Ionicons name="locate" size={40} color="#FFF"  />
+              <Ionicons name="locate" size={32} color="#FFF" />
             </View>
-          </LinearGradient>
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -769,27 +776,29 @@ const styles = StyleSheet.create({
     right: 0,
     height: 74,
     alignItems: 'center',
-    backgroundColor:'#01893F'
+    justifyContent: 'flex-end',
+    backgroundColor: 'transparent',
   },
-  navigationBar: {
+  navigationBarBg: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     height: 74,
+    zIndex: 1,
+  },
+  navigationBarContent: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.2)',
+    height: 74,
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2,
     paddingHorizontal: 10,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.15,
-    
-    elevation: 8,
- 
-    backgroundColor: 'transparent',
   },
   navItem: {
     alignItems: 'center',
@@ -824,14 +833,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   navCenterItemPlaceholder: {
-    width: 60,
+    width: 68,
     flex: 1,
   },
   floatingButtonContainer: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 37,
     alignSelf: 'center',
-    zIndex: 999,
+    zIndex: 3,
   },
   navCenterButton: {
     width: 68,
@@ -839,6 +848,7 @@ const styles = StyleSheet.create({
     borderRadius: 34,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#01893F',
     shadowColor: '#01893F',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
@@ -851,7 +861,6 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    // backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
