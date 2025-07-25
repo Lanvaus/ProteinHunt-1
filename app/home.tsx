@@ -289,6 +289,10 @@ const HomeScreen = () => {
               source={require('../assets/images/protein-picks.png')}
               style={styles.categoryImage}
             />
+            <Image
+              source={require('../assets/images/rectangle.png')}
+              style={styles.categoryOverlayImage}
+            />
             <View style={styles.categoryTextOverlay}>
               <Text style={styles.categoryTitle}>Protein Picks</Text>
               <Text style={styles.categorySubtitle}>Lorem ipsum is simply dummy</Text>
@@ -305,6 +309,10 @@ const HomeScreen = () => {
             <Image
               source={require('../assets/images/protein-combos.png')}
               style={styles.categoryImage}
+            />
+            <Image
+              source={require('../assets/images/rectangle.png')}
+              style={styles.categoryOverlayImage}
             />
             <View style={styles.categoryTextOverlay}>
               <Text style={styles.categoryTitle}>Protein Combos</Text>
@@ -605,25 +613,38 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 16,
   },
+  categoryOverlayImage: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 50, // adjust as needed for overlay height
+    width: '100%',
+    resizeMode: 'stretch',
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    zIndex: 1,
+  },
   categoryTextOverlay: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(25, 26, 25, 0.7)',
     padding: 10,
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
+    zIndex: 2,
+    // backgroundColor removed
   },
   categoryTitle: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 17,
+    fontSize: 20,
     marginBottom: 2,
   },
   categorySubtitle: {
     color: 'white',
-    fontSize: 8,
+    fontSize: 10,
     opacity: 0.85,
   },
   nutritionistCard: {
