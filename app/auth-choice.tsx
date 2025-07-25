@@ -4,6 +4,8 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Platform,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -109,8 +111,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 24,
-    paddingTop: 40,
     alignItems: 'center',
+     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   logoContainer: {
     marginTop: 40,

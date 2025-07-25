@@ -2,14 +2,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import ApiService from '../services/api-service';
 
@@ -223,6 +225,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: 'row',

@@ -8,8 +8,10 @@ import {
   FlatList,
   Image,
   Modal,
+  Platform,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -459,6 +461,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Reset marginTop to avoid overlap with status bar
   },
   header: {
     flexDirection: 'row',

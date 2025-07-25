@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.testlan.ProteinHunt"
     },
     "web": {
       "bundler": "metro",
@@ -43,6 +44,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "dbf5876b-74c4-48f9-9ee6-98e4a3e3580d"
+      }
     }
   }
 }

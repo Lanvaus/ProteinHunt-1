@@ -6,12 +6,14 @@ import {
   Alert,
   Image,
   Linking,
+  Platform,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { useCart } from '../context/CartContext';
 import ApiService from '../services/api-service';
@@ -404,6 +406,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+ paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: 'row',

@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const OnboardingScreen = () => {
   const router = useRouter();
@@ -48,9 +48,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    padding: 20,
-    paddingTop: 40,
-    justifyContent: 'space-between',
+    padding: 10,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   imageContainer: {
  
