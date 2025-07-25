@@ -200,7 +200,7 @@ const HomeScreen = () => {
                 {renderLocationStatus()}
               </Text>
             </View>
-            <Ionicons name="chevron-down" size={20} color="#333" />
+            {/* <Ionicons name="chevron-down" size={20} color="#333" /> */}
           </TouchableOpacity>
           <TouchableOpacity style={styles.notificationButton}>
             <Ionicons name="notifications-outline" size={24} color="#333" />
