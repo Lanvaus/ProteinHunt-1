@@ -534,12 +534,13 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: '#FCFCFB',
     marginHorizontal: 4,
   },
   activeIndicator: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
+    backgroundColor: '#FDBF0A',
+   width: 10,
+    height: 10,
     borderColor: '#18853B',
   },
   categoriesHeader: {
