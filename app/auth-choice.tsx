@@ -4,8 +4,6 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  Platform,
-  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -111,8 +109,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 24,
+    marginTop: 80,
     alignItems: 'center',
-     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    //  paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   logoContainer: {
     marginTop: 40,
@@ -123,6 +122,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     resizeMode: 'contain',
+    transform: [{ scale: 1.3 }],
   },
   phoneInputContainer: {
     width: '100%',
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   nextButton: {
-    backgroundColor: '#18853B',
+    backgroundColor: '#009944',
     borderRadius: 10,
     paddingVertical: 16,
     alignItems: 'center',
