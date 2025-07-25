@@ -407,7 +407,7 @@ const HomeScreen = () => {
             end={[1, 1]}
           >
             <View style={styles.innerCircle}>
-              <Ionicons name="locate" size={24} color="#FFF" />
+              <Ionicons name="locate" size={40} color="#FFF"  />
             </View>
           </LinearGradient>
         </View>
@@ -769,6 +769,7 @@ const styles = StyleSheet.create({
     right: 0,
     height: 74,
     alignItems: 'center',
+    backgroundColor:'#01893F'
   },
   navigationBar: {
     position: 'absolute',
@@ -838,7 +839,7 @@ const styles = StyleSheet.create({
     borderRadius: 34,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#18853B',
+    shadowColor: '#01893F',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -850,7 +851,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    // backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
