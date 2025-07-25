@@ -243,7 +243,7 @@ const HomeScreen = () => {
           <View style={styles.bannerContent}>
             {/* Left: Text */}
             <View style={styles.bannerTextHalf}>
-              <View style={styles.bannerTextContainer}>
+              <View >
                 <Text style={styles.bannerTitle}>
                   Claim your {'\n'} discount 30%  {'\n'} daily now!
                 </Text>
@@ -509,14 +509,14 @@ const styles = StyleSheet.create({
     color: 'white',
     marginBottom: 8,
     letterSpacing: 0.5,
-    textAlign: 'right',
+    textAlign: 'left',
   },
   orderButton: {
-    backgroundColor: '#fff',
+    backgroundColor: '#101010',
     borderRadius: 22,
     paddingVertical: 7,
     paddingHorizontal: 16,
-    alignSelf: 'flex-end',
+    alignSelf: 'flex-start',
     marginTop: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -525,7 +525,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   orderButtonText: {
-    color: '#18853B',
+    color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 13,
     letterSpacing: 0.2,
