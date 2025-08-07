@@ -27,6 +27,14 @@ interface UserLocation {
   timestamp: number;
 }
 
+interface Notification {
+  id: number;
+  message: string;
+  timestamp: string;
+  isRead: boolean;
+  type: 'order' | 'promo' | 'system';
+}
+
 const HomeScreen = () => {
   const router = useRouter();
   const { cart } = useCart();
@@ -37,6 +45,39 @@ const HomeScreen = () => {
   const [permissionStatus, setPermissionStatus] = useState<LocationPermissionStatus>(
     LocationPermissionStatus.UNDETERMINED
   );
+  
+  // Add notification related state
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([
+    {
+      id: 1,
+      message: "Your order #2456 has been delivered. Enjoy your meal!",
+      timestamp: "10 min ago",
+      isRead: false,
+      type: 'order'
+    },
+    {
+      id: 2,
+      message: "Special offer: Get 20% off on your next order with code PROTEIN20",
+      timestamp: "2 hours ago",
+      isRead: false,
+      type: 'promo'
+    },
+    {
+      id: 3,
+      message: "Your subscription plan will renew in 3 days",
+      timestamp: "Yesterday",
+      isRead: true,
+      type: 'system'
+    },
+    {
+      id: 4,
+      message: "New protein bowls added to our menu! Check them out!",
+      timestamp: "2 days ago",
+      isRead: true,
+      type: 'promo'
+    }
+  ]);
   
   useEffect(() => {
     checkLocationPermissionAndSetup();
@@ -191,12 +232,105 @@ const HomeScreen = () => {
     }
   };
 
+  // Toggle notification panel
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+  
+  // Mark notification as read
+  const markAsRead = (id: number) => {
+    setNotifications(prevNotifications => 
+      prevNotifications.map(notification => 
+        notification.id === id 
+          ? { ...notification, isRead: true } 
+          : notification
+      )
+    );
+  };
+  
+  // Get unread notification count
+  const unreadCount = notifications.filter(notification => !notification.isRead).length;
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
         colors={['#FFFFFF', '#FFFFFF']}
         style={StyleSheet.absoluteFill}
       />
+      
+      {/* Notification Panel - Show when the state is true */}
+      {showNotifications && (
+        <View style={styles.notificationPanelOverlay}>
+          <TouchableOpacity 
+            style={styles.notificationBackdrop}
+            onPress={toggleNotifications}
+            activeOpacity={1}
+          />
+          <View style={styles.notificationPanel}>
+            <View style={styles.notificationHeader}>
+              <Text style={styles.notificationTitle}>Notifications</Text>
+              <TouchableOpacity onPress={toggleNotifications}>
+                <Ionicons name="close" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
+            
+            {notifications.length === 0 ? (
+              <View style={styles.emptyNotifications}>
+                <Ionicons name="notifications-outline" size={48} color="#CCC" />
+                <Text style={styles.emptyNotificationsText}>
+                  No notifications yet
+                </Text>
+              </View>
+            ) : (
+              <ScrollView style={styles.notificationList}>
+                {notifications.map(notification => (
+                  <TouchableOpacity 
+                    key={notification.id} 
+                    style={[
+                      styles.notificationItem,
+                      !notification.isRead && styles.unreadNotification
+                    ]}
+                    onPress={() => markAsRead(notification.id)}
+                  >
+                    <View style={styles.notificationIconContainer}>
+                      <Ionicons 
+                        name={
+                          notification.type === 'order' ? 'receipt-outline' :
+                          notification.type === 'promo' ? 'pricetag-outline' :
+                          'information-circle-outline'
+                        } 
+                        size={24} 
+                        color={
+                          notification.type === 'order' ? '#4CAF50' :
+                          notification.type === 'promo' ? '#FF9800' :
+                          '#2196F3'
+                        } 
+                      />
+                    </View>
+                    <View style={styles.notificationContent}>
+                      <Text 
+                        style={[
+                          styles.notificationMessage,
+                          !notification.isRead && styles.unreadNotificationText
+                        ]}
+                      >
+                        {notification.message}
+                      </Text>
+                      <Text style={styles.notificationTimestamp}>
+                        {notification.timestamp}
+                      </Text>
+                    </View>
+                    {!notification.isRead && (
+                      <View style={styles.unreadIndicator} />
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      )}
+      
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header with Location */}
         <View style={styles.header}>
@@ -230,8 +364,18 @@ const HomeScreen = () => {
             </View>
             {/* <Ionicons name="chevron-down" size={20} color="#333" /> */}
           </TouchableOpacity>
-          <TouchableOpacity style={styles.notificationButton}>
+          <TouchableOpacity 
+            style={styles.notificationButton}
+            onPress={toggleNotifications}
+          >
             <Ionicons name="notifications-outline" size={24} color="#333" />
+            {unreadCount > 0 && (
+              <View style={styles.notificationBadge}>
+                <Text style={styles.notificationBadgeText}>
+                  {unreadCount}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -463,6 +607,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F9F4',
     borderRadius: 16,
     elevation: 2,
+    position: 'relative',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#FF3B30',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
   },
   deliveryBanner: {
     backgroundColor: '#FFEBEA',
@@ -915,27 +1072,101 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 3,
   },
-
-
+  // Notification styles
+  notificationPanelOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000,
+  },
+  notificationBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  notificationPanel: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 100 : 80,
+    right: 20,
+    backgroundColor: '#FFF',
+    borderRadius: 16,
+    width: '80%',
+    maxHeight: '70%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  notificationHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEE',
+  },
+  notificationTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333',
+  },
+  notificationList: {
+    maxHeight: 500,
+  },
+  notificationItem: {
+    flexDirection: 'row',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+    alignItems: 'center',
+  },
+  unreadNotification: {
+    backgroundColor: '#F0F9F4',
+  },
+  notificationIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F0F9F4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  notificationContent: {
+    flex: 1,
+  },
+  notificationMessage: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 4,
+  },
+  unreadNotificationText: {
+    fontWeight: '600',
+  },
+  notificationTimestamp: {
+    fontSize: 12,
+    color: '#999',
+  },
+  unreadIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#18853B',
+    marginLeft: 8,
+  },
+  emptyNotifications: {
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyNotificationsText: {
+    fontSize: 16,
+    color: '#999',
+    marginTop: 16,
+    textAlign: 'center',
+  },
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export default HomeScreen;
