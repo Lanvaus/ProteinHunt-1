@@ -2,23 +2,24 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Dimensions,
-    FlatList,
-    Image,
-    Platform,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  FlatList,
+  Image,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import CustomMealService, {
-    CustomMealOptions,
-    CustomizationOption,
-    SaveCustomMealRequest
+  CustomMealOptions,
+  CustomizationOption,
+  SaveCustomMealRequest
 } from '../services/custom-meal-service';
 
 const { width } = Dimensions.get('window');
@@ -112,7 +113,44 @@ const StepIndicator = ({
   </View>
 );
 
-// Component for displaying an option card
+// Component for search bar
+const SearchBar = ({ 
+  onSearch 
+}: { 
+  onSearch: (text: string) => void 
+}) => {
+  const [searchText, setSearchText] = useState('');
+
+  const handleSearch = (text: string) => {
+    setSearchText(text);
+    onSearch(text);
+  };
+
+  return (
+    <View style={styles.searchContainer}>
+      <View style={styles.searchInputContainer}>
+        <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search ingredients..."
+          placeholderTextColor="#999"
+          value={searchText}
+          onChangeText={handleSearch}
+        />
+        {searchText.length > 0 && (
+          <TouchableOpacity 
+            onPress={() => handleSearch('')}
+            style={styles.clearButton}
+          >
+            <Ionicons name="close-circle" size={18} color="#999" />
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
+};
+
+// Component for displaying an option card (modified for 2-column layout)
 const OptionCard = ({ 
   option, 
   selected, 
@@ -141,14 +179,14 @@ const OptionCard = ({
             />
           ) : (
             <View style={styles.optionImagePlaceholder}>
-              <Ionicons name="restaurant-outline" size={36} color="#DDD" />
+              <Ionicons name="restaurant-outline" size={28} color="#DDD" />
             </View>
           )}
         </View>
         
         {selected && (
           <View style={styles.selectedBadge}>
-            <Ionicons name="checkmark-circle" size={24} color="#18853B" />
+            <Ionicons name="checkmark-circle" size={22} color="#18853B" />
           </View>
         )}
         
@@ -170,19 +208,19 @@ const OptionCard = ({
             <Text style={styles.macroValue}>
               {option.nutritionValues?.Protein || 0}g
             </Text>
-            <Text style={styles.macroLabel}>Protein</Text>
+            <Text style={styles.macroLabel}>P</Text>
           </View>
           <View style={styles.macroItem}>
             <Text style={styles.macroValue}>
               {option.nutritionValues?.Carbohydrates || 0}g
             </Text>
-            <Text style={styles.macroLabel}>Carbs</Text>
+            <Text style={styles.macroLabel}>C</Text>
           </View>
           <View style={styles.macroItem}>
             <Text style={styles.macroValue}>
               {option.nutritionValues?.Fats || 0}g
             </Text>
-            <Text style={styles.macroLabel}>Fat</Text>
+            <Text style={styles.macroLabel}>F</Text>
           </View>
         </View>
         
@@ -190,7 +228,7 @@ const OptionCard = ({
           <Text style={styles.optionPrice}>₹{option.price}</Text>
           {selected && (
             <View style={styles.selectedIndicator}>
-              <Text style={styles.selectedText}>Selected</Text>
+              <Text style={styles.selectedText}>✓</Text>
             </View>
           )}
         </View>
@@ -240,6 +278,9 @@ const BuildABowlScreen = () => {
 
   // Flag to control if the summary panel is expanded
   const [summaryExpanded, setSummaryExpanded] = useState(false);
+  
+  // Add search state
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Loading options
   useEffect(() => {
@@ -484,74 +525,107 @@ const BuildABowlScreen = () => {
     
     switch (currentStep) {
       case 0: // Base selection
+        const filteredBases = getFilteredOptions(options.bases, searchQuery);
         return (
           <View style={styles.stepContentContainer}>
+            <SearchBar onSearch={handleSearch} />
             <Text style={styles.stepInstructions}>
               Start with a base for your bowl
             </Text>
-            <FlatList
-              data={options.bases}
-              renderItem={({ item }) => (
-                <OptionCard
-                  option={item}
-                  selected={item.id === selectedBase}
-                  onPress={() => {
-                    handleBaseSelect(item.id);
-                    // Auto-advance if a base is selected
-                    if (item.id !== selectedBase) {
-                      setTimeout(() => goToNextStep(), 500);
-                    }
-                  }}
-                />
-              )}
-              keyExtractor={item => item.id.toString()}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.optionsList}
-            />
+            {filteredBases.length === 0 ? (
+              <View style={styles.noResultsContainer}>
+                <Ionicons name="search-outline" size={48} color="#CCC" />
+                <Text style={styles.noResultsText}>No matching bases found</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={filteredBases}
+                renderItem={({ item }) => (
+                  <OptionCard
+                    option={item}
+                    selected={item.id === selectedBase}
+                    onPress={() => {
+                      handleBaseSelect(item.id);
+                      // Auto-advance if a base is selected
+                      if (item.id !== selectedBase) {
+                        setTimeout(() => goToNextStep(), 500);
+                      }
+                    }}
+                  />
+                )}
+                keyExtractor={item => item.id.toString()}
+                numColumns={2}
+                columnWrapperStyle={styles.optionsRow}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.optionsList}
+              />
+            )}
           </View>
         );
       
       case 1: // Protein selection
+        const filteredProteins = getFilteredOptions(options.proteinOptions, searchQuery);
         return (
           <View style={styles.stepContentContainer}>
+            <SearchBar onSearch={handleSearch} />
             <Text style={styles.stepInstructions}>
               Select protein options (you can choose multiple)
             </Text>
-            <FlatList
-              data={options.proteinOptions}
-              renderItem={({ item }) => (
-                <OptionCard
-                  option={item}
-                  selected={selectedProteins.includes(item.id)}
-                  onPress={() => handleProteinSelect(item.id)}
-                />
-              )}
-              keyExtractor={item => item.id.toString()}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.optionsList}
-            />
+            {filteredProteins.length === 0 ? (
+              <View style={styles.noResultsContainer}>
+                <Ionicons name="search-outline" size={48} color="#CCC" />
+                <Text style={styles.noResultsText}>No matching proteins found</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={filteredProteins}
+                renderItem={({ item }) => (
+                  <OptionCard
+                    option={item}
+                    selected={selectedProteins.includes(item.id)}
+                    onPress={() => handleProteinSelect(item.id)}
+                  />
+                )}
+                keyExtractor={item => item.id.toString()}
+                numColumns={2}
+                columnWrapperStyle={styles.optionsRow}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.optionsList}
+              />
+            )}
           </View>
         );
       
       case 2: // Add-ons selection
+        const filteredAddOns = getFilteredOptions(options.addOns, searchQuery);
         return (
           <View style={styles.stepContentContainer}>
+            <SearchBar onSearch={handleSearch} />
             <Text style={styles.stepInstructions}>
               Add optional toppings to enhance your bowl
             </Text>
-            <FlatList
-              data={options.addOns}
-              renderItem={({ item }) => (
-                <OptionCard
-                  option={item}
-                  selected={selectedAddOns.includes(item.id)}
-                  onPress={() => handleAddOnSelect(item.id)}
-                />
-              )}
-              keyExtractor={item => item.id.toString()}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.optionsList}
-            />
+            {filteredAddOns.length === 0 ? (
+              <View style={styles.noResultsContainer}>
+                <Ionicons name="search-outline" size={48} color="#CCC" />
+                <Text style={styles.noResultsText}>No matching add-ons found</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={filteredAddOns}
+                renderItem={({ item }) => (
+                  <OptionCard
+                    option={item}
+                    selected={selectedAddOns.includes(item.id)}
+                    onPress={() => handleAddOnSelect(item.id)}
+                  />
+                )}
+                keyExtractor={item => item.id.toString()}
+                numColumns={2}
+                columnWrapperStyle={styles.optionsRow}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.optionsList}
+              />
+            )}
           </View>
         );
       
@@ -694,6 +768,21 @@ const BuildABowlScreen = () => {
     if (stepIndex <= currentStep) {
       setCurrentStep(stepIndex);
     }
+  };
+
+  // Filter options based on search
+  const getFilteredOptions = (options: CustomizationOption[], query: string) => {
+    if (!query.trim()) return options;
+    
+    const lowerCaseQuery = query.toLowerCase().trim();
+    return options.filter(option => 
+      option.name.toLowerCase().includes(lowerCaseQuery)
+    );
+  };
+  
+  // Handle search
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
   };
 
   return (
@@ -1042,11 +1131,56 @@ const styles = StyleSheet.create({
     paddingBottom: 180, // Extra padding to account for summary panel
   },
   
+  // Search styles
+  searchContainer: {
+    paddingHorizontal: 4,
+    paddingBottom: 12,
+  },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    height: 44,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 44,
+    fontSize: 16,
+    color: '#333',
+  },
+  clearButton: {
+    padding: 6,
+  },
+  noResultsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 40,
+  },
+  noResultsText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#999',
+    textAlign: 'center',
+  },
+  
+  // Two-column layout styles
+  optionsRow: {
+    justifyContent: 'space-between',
+    marginHorizontal: 4,
+  },
+  
   // Option card styles
   optionCard: {
+    width: '48%',  // Almost half width to fit two columns with space
     backgroundColor: '#FFF',
     borderRadius: 12,
-    marginBottom: 16,
+    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -1064,7 +1198,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   optionImageContainer: {
-    height: 120,
+    height: 100, // Smaller height for 2-column
     width: '100%',
     backgroundColor: '#F8F8F8',
   },
