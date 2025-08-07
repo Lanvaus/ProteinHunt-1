@@ -2,19 +2,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    Image,
-    Platform,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Image,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import BottomTabNavigator from '../components/BottomTabNavigator';
 import { CartItem, useCart } from '../context/CartContext';
 
 const CartScreen = () => {
@@ -185,7 +184,7 @@ const CartScreen = () => {
       )}
 
       {/* Add the BottomTabNavigator with cart as the active tab */}
-      <BottomTabNavigator activeTab="cart" />
+      {/* <BottomTabNavigator activeTab="cart" /> */}
     </SafeAreaView>
   );
 };
