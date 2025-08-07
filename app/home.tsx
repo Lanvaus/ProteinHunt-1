@@ -249,7 +249,10 @@ const HomeScreen = () => {
                 <Text style={styles.bannerTitle}>
                   Claim your {'\n'} discount 30%  {'\n'} daily now!
                 </Text>
-                <TouchableOpacity style={styles.orderButton}>
+                <TouchableOpacity style={styles.orderButton}  onPress={() => router.push({
+              pathname: '/protein-picks',
+              params: { mealType: 'PROTEIN_PICK', title: 'Protein Picks' }
+            })}>
                   <Text style={styles.orderButtonText}>Order now</Text>
                 </TouchableOpacity>
               </View>
