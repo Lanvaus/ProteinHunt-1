@@ -855,6 +855,26 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 8, 
   },
+  permissionBannerText: {
+    color: '#FF8C00',
+    fontSize: 14,
+    marginLeft: 8,
+    flex: 1,
+  },
+  enableButton: {
+    backgroundColor: '#FF8C00',
+    borderRadius: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  enableButtonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  warningLocation: {
+    color: '#FF8C00',
+  },
   bannerIndicatorsBottom: {
     position: 'absolute',
     bottom: 10,

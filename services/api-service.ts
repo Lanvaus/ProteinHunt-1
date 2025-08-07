@@ -199,6 +199,25 @@ interface DietPlan {
   active: boolean;
 }
 
+// Subscription interfaces
+interface Subscription {
+  id: number;
+  userId: number;
+  dietPlanId: number;
+  startDate: string;
+  endDate: string;
+  status: 'PENDING' | 'ACTIVE' | 'PAUSED' | 'CANCELED';
+  pricePerCycle: number;
+  billingCycle: string;
+  createdAt: string;
+}
+
+interface SubscriptionRequest {
+  dietPlanId: number;
+  pricePerCycle: number;
+  billingCycle: string;
+}
+
 class ApiService {
   static async sendOtp(phoneNumber: string): Promise<ApiResponse<any>> {
     try {
@@ -477,6 +496,27 @@ class ApiService {
 
   static async getActiveDietPlan(): Promise<ApiResponse<DietPlan>> {
     return await this.authenticatedRequest<DietPlan>('/user/diet-plans/my-active-plan');
+  }
+
+  // Subscription related methods
+  static async createSubscription(request: SubscriptionRequest): Promise<ApiResponse<Subscription>> {
+    return await this.authenticatedRequest<Subscription>('/user/subscriptions', 'POST', request);
+  }
+
+  static async getActiveSubscription(): Promise<ApiResponse<Subscription>> {
+    return await this.authenticatedRequest<Subscription>('/user/subscriptions/my-active');
+  }
+
+  static async cancelSubscription(): Promise<ApiResponse<Subscription>> {
+    return await this.authenticatedRequest<Subscription>('/user/subscriptions/my-active/cancel', 'POST');
+  }
+
+  static async pauseSubscription(): Promise<ApiResponse<Subscription>> {
+    return await this.authenticatedRequest<Subscription>('/user/subscriptions/my-active/pause', 'POST');
+  }
+
+  static async resumeSubscription(): Promise<ApiResponse<Subscription>> {
+    return await this.authenticatedRequest<Subscription>('/user/subscriptions/my-paused/resume', 'POST');
   }
 
   // Helper method for authenticated requests

@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
+    Alert,
     Platform,
     SafeAreaView,
     ScrollView,
@@ -13,6 +14,7 @@ import {
     View
 } from 'react-native';
 import ApiService from '../../services/api-service';
+import SubscriptionService from '../../services/subscription-service';
 
 // This is a simplification - in a real app you should use the full interfaces 
 // as defined in api-service.ts
@@ -50,10 +52,13 @@ const DietPlanDetailsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [subscription, setSubscription] = useState<any | null>(null);
+  const [loadingSubscription, setLoadingSubscription] = useState(false);
 
   useEffect(() => {
     if (!id) return;
     fetchPlanDetails(parseInt(id));
+    checkSubscription();
   }, [id]);
 
   const fetchPlanDetails = async (planId: number) => {
@@ -75,6 +80,68 @@ const DietPlanDetailsScreen = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const checkSubscription = async () => {
+    if (!id) return;
+    
+    setLoadingSubscription(true);
+    try {
+      const activeSubscription = await SubscriptionService.getActiveSubscription();
+      if (activeSubscription && activeSubscription.dietPlanId === parseInt(id)) {
+        setSubscription(activeSubscription);
+      }
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    } finally {
+      setLoadingSubscription(false);
+    }
+  };
+
+  const handleSubscribe = () => {
+    if (!plan) return;
+    
+    // Default subscription price and cycle - in a real app this might be configurable
+    const defaultPrice = 999; // ₹999
+    const defaultCycle = 'MONTHLY';
+    
+    Alert.alert(
+      'Subscribe to Diet Plan',
+      `Subscribe to ${plan.planName} for ₹${defaultPrice}/${defaultCycle.toLowerCase()}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Subscribe', 
+          onPress: async () => {
+            setLoadingSubscription(true);
+            try {
+              const newSubscription = await SubscriptionService.createSubscription(
+                parseInt(id),
+                defaultPrice,
+                defaultCycle
+              );
+              
+              if (newSubscription) {
+                setSubscription(newSubscription);
+                Alert.alert('Success', 'Successfully subscribed to diet plan!');
+              } else {
+                Alert.alert('Error', 'Failed to create subscription');
+              }
+            } catch (error) {
+              console.error('Error creating subscription:', error);
+              Alert.alert('Error', 'An unexpected error occurred');
+            } finally {
+              setLoadingSubscription(false);
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const handleManageSubscription = () => {
+    if (!subscription) return;
+    router.push(`/subscription-details/${subscription.id}`);
   };
 
   const formatDate = (dateString: string) => {
@@ -158,6 +225,52 @@ const DietPlanDetailsScreen = () => {
             </View>
             <Text style={styles.planSubtitle}>Created by {plan.nutritionistName}</Text>
             <Text style={styles.planDate}>Created on {formatDate(plan.createdAt)}</Text>
+          </View>
+          
+          {/* Subscription Section */}
+          <View style={styles.subscriptionSection}>
+            {loadingSubscription ? (
+              <ActivityIndicator size="small" color="#18853B" />
+            ) : subscription ? (
+              <View style={styles.subscriptionCard}>
+                <View style={styles.subscriptionHeader}>
+                  <Text style={styles.subscriptionTitle}>Active Subscription</Text>
+                  <View style={styles.subscriptionStatusBadge}>
+                    <Text style={styles.subscriptionStatusText}>{subscription.status}</Text>
+                  </View>
+                </View>
+                
+                <View style={styles.subscriptionInfoRow}>
+                  <Text style={styles.subscriptionInfoLabel}>Billing:</Text>
+                  <Text style={styles.subscriptionInfoValue}>
+                    ₹{subscription.pricePerCycle}/{subscription.billingCycle.toLowerCase()}
+                  </Text>
+                </View>
+                
+                <View style={styles.subscriptionInfoRow}>
+                  <Text style={styles.subscriptionInfoLabel}>Next billing date:</Text>
+                  <Text style={styles.subscriptionInfoValue}>
+                    {SubscriptionService.formatDate(subscription.endDate)}
+                  </Text>
+                </View>
+                
+                <TouchableOpacity
+                  style={styles.manageSubscriptionButton}
+                  onPress={handleManageSubscription}
+                >
+                  <Text style={styles.manageSubscriptionButtonText}>Manage Subscription</Text>
+                  <Ionicons name="chevron-forward" size={16} color="#18853B" />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.subscribeButton}
+                onPress={handleSubscribe}
+              >
+                <Text style={styles.subscribeButtonText}>Subscribe to Diet Plan</Text>
+                <Text style={styles.subscribeButtonPrice}>₹999/month</Text>
+              </TouchableOpacity>
+            )}
           </View>
           
           {/* General Notes */}
@@ -358,6 +471,67 @@ const styles = StyleSheet.create({
   planDate: {
     fontSize: 13,
     color: '#999',
+  },
+  subscriptionSection: {
+    padding: 16,
+  },
+  subscriptionCard: {
+    backgroundColor: '#F8FEFB',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#D0EFE0',
+    padding: 16,
+  },
+  subscriptionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  subscriptionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  subscriptionStatusBadge: {
+    backgroundColor: '#E8F5E9',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  subscriptionStatusText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#4CAF50',
+  },
+  subscriptionInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  subscriptionInfoLabel: {
+    fontSize: 14,
+    color: '#666',
+  },
+  subscriptionInfoValue: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+  },
+  manageSubscriptionButton: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 12,
+    paddingVertical: 10,
+    backgroundColor: '#F0F9F4',
+    borderRadius: 8,
+  },
+  manageSubscriptionButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#18853B',
+    marginRight: 4,
   },
   notesSection: {
     padding: 16,
