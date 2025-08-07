@@ -25,49 +25,90 @@ const { width } = Dimensions.get('window');
 
 // Steps in the bowl building process
 const STEPS = [
-  { key: 'base', title: 'Choose Base' },
-  { key: 'protein', title: 'Add Protein' },
-  { key: 'addons', title: 'Add Toppings' },
-  { key: 'review', title: 'Review' }
+  { key: 'base', title: 'Choose Base', icon: 'restaurant-outline' },
+  { key: 'protein', title: 'Add Protein', icon: 'nutrition-outline' },
+  { key: 'addons', title: 'Add Toppings', icon: 'leaf-outline' },
+  { key: 'review', title: 'Review', icon: 'checkmark-circle-outline' }
 ];
 
 // Component for displaying a step indicator
 const StepIndicator = ({ 
-  currentStep 
+  currentStep,
+  onStepPress
 }: { 
-  currentStep: number 
+  currentStep: number,
+  onStepPress?: (stepIndex: number) => void
 }) => (
-  <View style={styles.stepIndicatorContainer}>
-    {STEPS.map((step, index) => (
-      <View key={step.key} style={styles.stepItem}>
-        <View style={[
-          styles.stepDot,
-          currentStep === index ? styles.activeStepDot : 
-          currentStep > index ? styles.completedStepDot : {}
-        ]}>
-          {currentStep > index ? (
-            <Ionicons name="checkmark" size={12} color="#FFF" />
-          ) : (
-            <Text style={currentStep === index ? styles.activeStepNumber : styles.stepNumber}>
-              {index + 1}
-            </Text>
-          )}
-        </View>
-        <Text style={[
-          styles.stepTitle,
-          currentStep === index ? styles.activeStepTitle : {}
-        ]}>
-          {step.title}
-        </Text>
+  <View style={styles.stepIndicatorWrapper}>
+    <View style={styles.stepIndicatorContainer}>
+      {STEPS.map((step, index) => {
+        const isActive = currentStep === index;
+        const isCompleted = currentStep > index;
         
-        {index < STEPS.length - 1 && (
-          <View style={[
-            styles.stepConnector,
-            currentStep > index ? styles.completedStepConnector : {}
-          ]} />
-        )}
-      </View>
-    ))}
+        return (
+          <React.Fragment key={step.key}>
+            {/* Step dot with number or check */}
+            <TouchableOpacity 
+              style={[
+                styles.stepItemContainer,
+                isActive && styles.activeStepItemContainer
+              ]}
+              onPress={() => onStepPress && isCompleted && onStepPress(index)}
+              disabled={!onStepPress || (!isCompleted && !isActive)}
+            >
+              <View style={[
+                styles.stepDot,
+                isActive && styles.activeStepDot,
+                isCompleted && styles.completedStepDot
+              ]}>
+                {isCompleted ? (
+                  <Ionicons name="checkmark" size={16} color="#FFF" />
+                ) : (
+                  <View style={styles.stepIconContainer}>
+                    <Ionicons 
+                      name={step.icon as any} 
+                      size={16} 
+                      color={isActive ? "#FFF" : "#999"} 
+                    />
+                  </View>
+                )}
+              </View>
+              
+              <Text style={[
+                styles.stepTitle,
+                isActive && styles.activeStepTitle,
+                isCompleted && styles.completedStepTitle
+              ]}>
+                {step.title}
+              </Text>
+            </TouchableOpacity>
+            
+            {/* Connector between steps */}
+            {index < STEPS.length - 1 && (
+              <View style={[
+                styles.stepConnector,
+                isCompleted && styles.completedStepConnector
+              ]}>
+                <View style={[
+                  styles.connectorLine,
+                  isCompleted && styles.completedConnectorLine
+                ]} />
+              </View>
+            )}
+          </React.Fragment>
+        );
+      })}
+    </View>
+    
+    {/* Progress bar indicator */}
+    <View style={styles.progressBarContainer}>
+      <View 
+        style={[
+          styles.progressBar, 
+          { width: `${(currentStep / (STEPS.length - 1)) * 100}%` }
+        ]} 
+      />
+    </View>
   </View>
 );
 
@@ -647,6 +688,14 @@ const BuildABowlScreen = () => {
     ).filter(Boolean) as CustomizationOption[];
   };
 
+  // Handle direct step navigation
+  const handleStepPress = (stepIndex: number) => {
+    // Only allow navigating to completed steps or the next available step
+    if (stepIndex <= currentStep) {
+      setCurrentStep(stepIndex);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -699,8 +748,11 @@ const BuildABowlScreen = () => {
         </View>
       ) : (
         <>
-          {/* Step indicator */}
-          <StepIndicator currentStep={currentStep} />
+          {/* Step indicator with ability to navigate to previous steps */}
+          <StepIndicator 
+            currentStep={currentStep} 
+            onStepPress={handleStepPress} 
+          />
           
           {/* Step content */}
           {renderStepContent()}
@@ -884,62 +936,95 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   
-  // Step indicator styles
+  // Enhanced Step indicator styles
+  stepIndicatorWrapper: {
+    paddingVertical: 20,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
   stepIndicatorContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FFF',
-  },
-  stepItem: {
-    flex: 1,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    position: 'relative',
+    paddingHorizontal: 20,
+    marginBottom: 15,
+  },
+  stepItemContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: width / 5,
+  },
+  activeStepItemContainer: {
+    transform: [{scale: 1.05}],
   },
   stepDot: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: '#F2F2F2',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 8,
+    borderWidth: 2,
+    borderColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   activeStepDot: {
     backgroundColor: '#18853B',
+    borderColor: '#18853B',
   },
   completedStepDot: {
     backgroundColor: '#4CAF50',
+    borderColor: '#4CAF50',
   },
-  stepNumber: {
-    fontSize: 12,
-    color: '#666',
-    fontWeight: '600',
-  },
-  activeStepNumber: {
-    fontSize: 12,
-    color: '#FFF',
-    fontWeight: '600',
+  stepIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   stepTitle: {
     fontSize: 12,
-    color: '#666',
+    color: '#999',
     textAlign: 'center',
+    fontWeight: '500',
   },
   activeStepTitle: {
-    color: '#333',
+    color: '#18853B',
+    fontWeight: '700',
+  },
+  completedStepTitle: {
+    color: '#4CAF50',
     fontWeight: '600',
   },
   stepConnector: {
-    position: 'absolute',
-    top: 12,
-    right: 0,
-    left: '50%',
-    height: 2,
-    backgroundColor: '#F2F2F2',
+    flex: 1,
+    height: 34,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  completedStepConnector: {
+  connectorLine: {
+    height: 2,
+    backgroundColor: '#E0E0E0',
+    width: '100%',
+  },
+  completedConnectorLine: {
     backgroundColor: '#4CAF50',
+  },
+  progressBarContainer: {
+    height: 4,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 2,
+    marginHorizontal: 20,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#18853B',
+    borderRadius: 2,
   },
   
   // Step content styles
