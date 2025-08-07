@@ -355,14 +355,17 @@ const HomeScreen = () => {
 
         {/* Feature Cards */}
         <View style={styles.featureCardsRow}>
-          <TouchableOpacity style={[styles.featureCard, styles.featureCardLeft]}>
+          <TouchableOpacity 
+            style={[styles.featureCard, styles.featureCardLeft]}
+            onPress={() => router.push('/diet-plans')}
+          >
             <Image
               source={require('../assets/images/diet-plan.png')}
               style={styles.featureImage}
             />
             <View style={styles.featureTextContainer}>
               <Text style={styles.featureTitle}>Diet Plan</Text>
-              <Text style={styles.featureDescription}>Upload diet</Text>
+              <Text style={styles.featureDescription}>View your plan</Text>
             </View>
           </TouchableOpacity>
           

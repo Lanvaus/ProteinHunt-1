@@ -109,6 +109,96 @@ interface ConsultationPageResponse {
   content: ConsultationRequest[];
 }
 
+// Diet plan interfaces
+interface NutritionValues {
+  [key: string]: number;
+}
+
+interface MealCategory {
+  id: number;
+  name: string;
+  imageUrl: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface StandardMeal {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+  servingWeightGrams: number;
+  caloriesKcal: number;
+  nutritionValues: NutritionValues;
+  price: number;
+  mealType: string;
+  mealCategory: MealCategory;
+  vegetarian: boolean;
+}
+
+interface CustomizationComponent {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+  servingWeightGrams: number;
+  caloriesKcal: number;
+  nutritionValues: NutritionValues;
+  price: number;
+  active: boolean;
+  vegetarian: boolean;
+}
+
+interface CustomizedMeal {
+  customizedMealName: string;
+  selectedBase: CustomizationComponent;
+  selectedProteins: CustomizationComponent[];
+  selectedAddOns: CustomizationComponent[];
+  totalServingWeightGrams: number;
+  totalCaloriesKcal: number;
+  totalNutritionValues: NutritionValues;
+  totalPrice: number;
+  notes: string;
+}
+
+interface GenericMeal {
+  name: string;
+  description: string;
+  nutritionInfo: NutritionValues;
+}
+
+interface ScheduledMeal {
+  id: number;
+  mealSlot: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK';
+  mealType: 'STANDARD' | 'CUSTOM' | 'GENERIC';
+  nutritionistNotes: string;
+  standardMeal?: StandardMeal;
+  customizedMeal?: CustomizedMeal;
+  genericMeal?: GenericMeal;
+}
+
+interface DailyPlan {
+  id: number;
+  weekNumber: number;
+  dayOfWeek: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
+  scheduledMeals: ScheduledMeal[];
+}
+
+interface DietPlan {
+  id: number;
+  consultationRequestId: number;
+  userId: number;
+  userName: string;
+  nutritionistId: number;
+  nutritionistName: string;
+  planName: string;
+  generalNotes: string;
+  createdAt: string;
+  updatedAt: string;
+  dailyPlans: DailyPlan[];
+  active: boolean;
+}
+
 class ApiService {
   static async sendOtp(phoneNumber: string): Promise<ApiResponse<any>> {
     try {
@@ -374,6 +464,19 @@ class ApiService {
       `/user/consultations/${requestId}/reject`, 
       'POST'
     );
+  }
+
+  // Diet plan related methods
+  static async getAllDietPlans(): Promise<ApiResponse<DietPlan[]>> {
+    return await this.authenticatedRequest<DietPlan[]>('/user/diet-plans');
+  }
+
+  static async getDietPlanById(planId: number): Promise<ApiResponse<DietPlan>> {
+    return await this.authenticatedRequest<DietPlan>(`/user/diet-plans/${planId}`);
+  }
+
+  static async getActiveDietPlan(): Promise<ApiResponse<DietPlan>> {
+    return await this.authenticatedRequest<DietPlan>('/user/diet-plans/my-active-plan');
   }
 
   // Helper method for authenticated requests
