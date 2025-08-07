@@ -854,7 +854,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginHorizontal: 16,
     borderRadius: 8, 
-  }
+  },
+  bannerIndicatorsBottom: {
+    position: 'absolute',
+    bottom: 10,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 3,
+  },
 
 
 })
