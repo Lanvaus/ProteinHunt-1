@@ -164,6 +164,33 @@ const HomeScreen = () => {
     return location?.address || 'Set your location';
   };
 
+  // Create a location refresh handler to pass to BottomTabNavigator
+  const handleLocationRefresh = async () => {
+    setIsLoading(true);
+    try {
+      // Check permission first
+      if (permissionStatus !== LocationPermissionStatus.GRANTED) {
+        await handleRequestPermission();
+        return;
+      }
+      
+      // Get current location
+      const userLocation = await LocationService.getCurrentLocation();
+      if (userLocation) {
+        setLocation(userLocation);
+        await checkDeliveryAvailability(userLocation.latitude, userLocation.longitude);
+        
+        // Show a success toast or feedback
+        Alert.alert('Location Updated', 'Your location has been refreshed');
+      }
+    } catch (error) {
+      console.error('Error updating location:', error);
+      Alert.alert('Error', 'Failed to update your location');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
@@ -385,8 +412,11 @@ const HomeScreen = () => {
         </View>
       </ScrollView>
       
-      {/* Use the new BottomTabNavigator component */}
-      <BottomTabNavigator activeTab="home" />
+      {/* Pass the location refresh handler to BottomTabNavigator */}
+      <BottomTabNavigator 
+        activeTab="home" 
+        onLocationRefresh={handleLocationRefresh} 
+      />
     </SafeAreaView>
   );
 };

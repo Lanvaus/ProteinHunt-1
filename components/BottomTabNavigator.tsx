@@ -1,17 +1,56 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useCart } from '../context/CartContext';
+import ApiService from '../services/api-service';
+import LocationService from '../services/location-service';
 
 interface BottomTabNavigatorProps {
   activeTab: 'home' | 'consultations' | 'orders' | 'cart';
+  onLocationRefresh?: () => void; // Add callback for location refresh
 }
 
-const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({ activeTab }) => {
+const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({ 
+  activeTab,
+  onLocationRefresh 
+}) => {
   const router = useRouter();
   const { cart } = useCart();
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+  
+  // Handle location refresh when center button is pressed
+  const handleLocationRefresh = async () => {
+    // If there's a parent callback, use that
+    if (onLocationRefresh) {
+      onLocationRefresh();
+      return;
+    }
+    
+    // Otherwise handle location refresh here
+    setIsRefreshing(true);
+    try {
+      const userLocation = await LocationService.getCurrentLocation();
+      
+      if (userLocation) {
+        // Check delivery availability at the current location
+        const response = await ApiService.checkDeliveryAvailability(
+          userLocation.latitude, 
+          userLocation.longitude
+        );
+        
+        if (response.success) {
+          // Navigate to the nearest kitchen or show availability
+          router.push('/delivery-zones');
+        }
+      }
+    } catch (error) {
+      console.error('Error refreshing location:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
   
   return (
     <View style={styles.navigationContainer}>
@@ -85,11 +124,21 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({ activeTab }) =>
       </View>
       {/* Floating center button */}
       <View style={styles.floatingButtonContainer}>
-        <View style={styles.navCenterButton}>
+        <TouchableOpacity 
+          style={styles.navCenterButton}
+          onPress={handleLocationRefresh}
+          disabled={isRefreshing}
+        >
           <View style={styles.innerCircle}>
-            <Ionicons name="locate" size={32} color="#FFF" />
+            {isRefreshing ? (
+              <ActivityIndicator size="small" color="#FFF" />
+            ) : (
+              <Ionicons name="locate" size={32} color="#FFF" />
+            )}
           </View>
-        </View>
+        </TouchableOpacity>
+        {/* Tooltip for the center button */}
+      
       </View>
     </View>
   );
@@ -168,6 +217,7 @@ const styles = StyleSheet.create({
     bottom: 37,
     alignSelf: 'center',
     zIndex: 3,
+    alignItems: 'center',
   },
   navCenterButton: {
     width: 68,
@@ -190,6 +240,19 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  buttonTooltip: {
+    position: 'absolute',
+    bottom: -22,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+  },
+  tooltipText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '500',
   },
 });
 
