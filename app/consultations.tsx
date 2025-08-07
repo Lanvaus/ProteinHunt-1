@@ -2,15 +2,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    FlatList,
-    Platform,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  FlatList,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import BottomTabNavigator from '../components/BottomTabNavigator';
 import ApiService from '../services/api-service';
@@ -31,7 +31,9 @@ interface ConsultationRequest {
   nutritionistName: string;
   uploadedPlanDocumentUrl: string;
   userNotes: string;
-  status: 'SUBMITTED_BY_USER' | 'IN_REVIEW' | 'FINALIZED' | 'ACCEPTED' | 'REJECTED';
+  status: 'SUBMITTED_BY_USER' | 'ASSIGNED_TO_NUTRITIONIST' | 'UNDER_REVIEW' | 
+         'SUGGESTIONS_PROVIDED' | 'USER_FEEDBACK_RECEIVED' | 'PLAN_FINALIZED' | 
+         'CLOSED' | 'CANCELLED_BY_USER' | 'CANCELLED_BY_ADMIN';
   finalizedPlanDetails: string;
   messages: ConsultationMessage[];
   createdAt: string;
@@ -112,15 +114,21 @@ const ConsultationsScreen = () => {
     switch (filter) {
       case 'ACTIVE':
         setFilteredConsultations(data.filter(c => 
-          c.status === 'SUBMITTED_BY_USER' || c.status === 'IN_REVIEW'
+          c.status === 'SUBMITTED_BY_USER' || 
+          c.status === 'ASSIGNED_TO_NUTRITIONIST' || 
+          c.status === 'UNDER_REVIEW' ||
+          c.status === 'SUGGESTIONS_PROVIDED' ||
+          c.status === 'USER_FEEDBACK_RECEIVED'
         ));
         break;
       case 'FINALIZED':
-        setFilteredConsultations(data.filter(c => c.status === 'FINALIZED'));
+        setFilteredConsultations(data.filter(c => c.status === 'PLAN_FINALIZED'));
         break;
       case 'COMPLETED':
         setFilteredConsultations(data.filter(c => 
-          c.status === 'ACCEPTED' || c.status === 'REJECTED'
+          c.status === 'CLOSED' || 
+          c.status === 'CANCELLED_BY_USER' || 
+          c.status === 'CANCELLED_BY_ADMIN'
         ));
         break;
       case 'ALL':
@@ -160,29 +168,53 @@ const ConsultationsScreen = () => {
           textColor: '#18853B',
           text: 'Submitted'
         };
-      case 'IN_REVIEW':
-        return {
-          backgroundColor: '#FFF9E5',
-          textColor: '#FF8C00',
-          text: 'In Review'
-        };
-      case 'FINALIZED':
+      case 'ASSIGNED_TO_NUTRITIONIST':
         return {
           backgroundColor: '#E5F6FF',
           textColor: '#007AFF',
-          text: 'Finalized'
+          text: 'Assigned'
         };
-      case 'ACCEPTED':
+      case 'UNDER_REVIEW':
+        return {
+          backgroundColor: '#FFF9E5',
+          textColor: '#FF8C00',
+          text: 'Under Review'
+        };
+      case 'SUGGESTIONS_PROVIDED':
+        return {
+          backgroundColor: '#E5F6FF',
+          textColor: '#007AFF',
+          text: 'Feedback Received'
+        };
+      case 'USER_FEEDBACK_RECEIVED':
+        return {
+          backgroundColor: '#F0F0F0',
+          textColor: '#666',
+          text: 'Your Response Sent'
+        };
+      case 'PLAN_FINALIZED':
+        return {
+          backgroundColor: '#E5F6FF',
+          textColor: '#007AFF',
+          text: 'Plan Finalized'
+        };
+      case 'CLOSED':
         return {
           backgroundColor: '#E5FFF4',
           textColor: '#18853B',
-          text: 'Accepted'
+          text: 'Completed'
         };
-      case 'REJECTED':
+      case 'CANCELLED_BY_USER':
         return {
           backgroundColor: '#FFEBEA',
           textColor: '#FF3B30',
-          text: 'Rejected'
+          text: 'Cancelled by You'
+        };
+      case 'CANCELLED_BY_ADMIN':
+        return {
+          backgroundColor: '#FFEBEA',
+          textColor: '#FF3B30',
+          text: 'Cancelled by Admin'
         };
       default:
         return {
