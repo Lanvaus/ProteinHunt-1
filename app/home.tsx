@@ -276,9 +276,9 @@ const HomeScreen = () => {
         {/* Top Categories */}
         <View style={styles.categoriesHeader}>
           <Text style={styles.sectionTitle}>Top Categories</Text>
-          <TouchableOpacity>
+          {/* <TouchableOpacity>
             <Text style={styles.seeAllText}>See all</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <View style={styles.categoriesContainer}>
