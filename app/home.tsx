@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import BottomTabNavigator from '../components/BottomTabNavigator';
 import { useCart } from '../context/CartContext';
 import ApiService from '../services/api-service';
 import LocationService, { LocationPermissionStatus } from '../services/location-service';
@@ -326,9 +326,21 @@ const HomeScreen = () => {
         <View style={styles.nutritionistCard}>
           <View style={styles.nutritionistTextContainer}>
             <Text style={styles.nutritionistTitle}>Consult a Certified Nutritionist</Text>
-            <TouchableOpacity style={styles.bookButton}>
-              <Text style={styles.bookButtonText}>Book Consultation</Text>
-            </TouchableOpacity>
+            <View style={styles.consultationActions}>
+              <TouchableOpacity 
+                style={styles.bookButton}
+                onPress={() => router.push('/consultation-upload')}
+              >
+                <Text style={styles.bookButtonText}>Book Consultation</Text>
+              </TouchableOpacity>
+              
+              {/* <TouchableOpacity 
+                style={styles.viewConsultationsButton}
+                onPress={() => router.push('/consultations')}
+              >
+                <Text style={styles.viewConsultationsText}>View Ongoing</Text>
+              </TouchableOpacity> */}
+            </View>
           </View>
           <View style={styles.nutritionistImageWrapper}>
             <Image
@@ -364,61 +376,8 @@ const HomeScreen = () => {
         </View>
       </ScrollView>
       
-      {/* Navigation Bar */}
-      <View style={styles.navigationContainer}>
-        {/* SVG curved background */}
-        <View style={styles.navigationBarBg}>
-          <Svg
-            width="100%"
-            height={74}
-            viewBox="0 0 400 74"
-            style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}
-          >
-            <Path
-              // Less deep center curve for smaller gap
-              d="M0 0 H120 Q145 0 160 38 Q200 64 240 38 Q255 0 280 0 H400 V74 H0 Z"
-              fill="#01893F"
-            />
-          </Svg>
-        </View>
-        <View style={styles.navigationBarContent}>
-          <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="home" size={24} color="#FFFFFF" />
-            <View style={styles.activeNavDot} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="person-outline" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-          <View style={styles.navCenterItemPlaceholder} />
-          <TouchableOpacity 
-            style={styles.navItem}
-            onPress={() => router.push('/orders')}
-          >
-            <Ionicons name="receipt-outline" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.navItem}
-            onPress={() => router.push('/cart')}
-          >
-            <Ionicons name="cart-outline" size={24} color="#FFFFFF" />
-            {cart && cart.totalItems > 0 && (
-              <View style={styles.cartBadge}>
-                <Text style={styles.cartBadgeText}>
-                  {cart.totalItems > 99 ? '99+' : cart.totalItems}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
-        {/* Floating center button */}
-        <View style={styles.floatingButtonContainer}>
-          <View style={styles.navCenterButton}>
-            <View style={styles.innerCircle}>
-              <Ionicons name="locate" size={32} color="#FFF" />
-            </View>
-          </View>
-        </View>
-      </View>
+      {/* Use the new BottomTabNavigator component */}
+      <BottomTabNavigator activeTab="home" />
     </SafeAreaView>
   );
 };
@@ -427,7 +386,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
- paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: 'row',
@@ -679,13 +638,17 @@ const styles = StyleSheet.create({
     color: '#1D1D21',
     marginBottom: 10,
   },
+  consultationActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
   bookButton: {
     backgroundColor: '#18853B',
     borderRadius: 22,
     paddingVertical: 10,
     paddingHorizontal: 18,
     alignSelf: 'flex-start',
-    marginTop: 2,
     shadowColor: '#18853B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.13,
@@ -697,6 +660,16 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 15,
     letterSpacing: 0.2,
+  },
+  viewConsultationsButton: {
+    marginLeft: 12,
+    paddingVertical: 8,
+  },
+  viewConsultationsText: {
+    color: '#18853B',
+    fontWeight: '600',
+    fontSize: 14,
+    textDecorationLine: 'underline',
   },
   nutritionistImageWrapper: {
     borderRadius: 50,
@@ -871,37 +844,29 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginHorizontal: 16,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  permissionBannerText: {
-    color: '#FF8C00',
-    fontSize: 14,
-    marginLeft: 8,
-    flex: 1,
-  },
-  enableButton: {
-    backgroundColor: '#FF8C00',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-  },
-  enableButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 12,
-  },
-  warningLocation: {
-    color: '#FF8C00',
-  },
-  bannerIndicatorsBottom: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: -15,
-    marginBottom: 8,
-    width: '100%',
-  },
-});
+    borderRadius: 8, 
+  }
+
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export default HomeScreen;

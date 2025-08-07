@@ -77,6 +77,38 @@ interface OrderHistoryResponse {
   pageSize: number;
 }
 
+// Consultation interfaces
+interface ConsultationMessage {
+  id: number;
+  senderId: number;
+  senderName: string;
+  messageContent: string;
+  sentAt: string;
+}
+
+interface ConsultationRequest {
+  id: number;
+  userId: number;
+  userName: string;
+  nutritionistId: number;
+  nutritionistName: string;
+  uploadedPlanDocumentUrl: string;
+  userNotes: string;
+  status: 'SUBMITTED_BY_USER' | 'IN_REVIEW' | 'FINALIZED' | 'ACCEPTED' | 'REJECTED';
+  finalizedPlanDetails: string;
+  messages: ConsultationMessage[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Add this interface with the paginated response structure
+interface ConsultationPageResponse {
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  content: ConsultationRequest[];
+}
+
 class ApiService {
   static async sendOtp(phoneNumber: string): Promise<ApiResponse<any>> {
     try {
@@ -283,6 +315,65 @@ class ApiService {
     });
     
     return await this.authenticatedRequest<OrderHistoryResponse>(`/orders?${queryParams.toString()}`);
+  }
+
+  // Consultation related methods
+  static async submitConsultation(planDocument: FormData, userNotes: string): Promise<ApiResponse<ConsultationRequest>> {
+    const formData = new FormData();
+    formData.append('planDocument', planDocument);
+    formData.append('userNotes', userNotes);
+    
+    return await this.authenticatedRequest<ConsultationRequest>('/user/consultations', 'POST', formData);
+  }
+
+  static async getConsultationDetails(requestId: number): Promise<ApiResponse<ConsultationRequest>> {
+    return await this.authenticatedRequest<ConsultationRequest>(`/user/consultations/${requestId}`);
+  }
+
+  static async sendConsultationMessage(requestId: number, messageContent: string): Promise<ApiResponse<ConsultationMessage>> {
+    return await this.authenticatedRequest<ConsultationMessage>(
+      `/user/consultations/${requestId}/messages`, 
+      'POST', 
+      { messageContent }
+    );
+  }
+
+  // Update this method to handle pagination
+  static async getUserConsultations(
+    page: number = 0, 
+    size: number = 10,
+    sort?: string[]
+  ): Promise<ApiResponse<ConsultationPageResponse>> {
+    const queryParams = new URLSearchParams();
+    
+    // Add pagination parameters
+    queryParams.append('page', page.toString());
+    queryParams.append('size', size.toString());
+    
+    // Add optional sort parameters
+    if (sort && sort.length > 0) {
+      sort.forEach(sortParam => {
+        queryParams.append('sort', sortParam);
+      });
+    }
+    
+    return await this.authenticatedRequest<ConsultationPageResponse>(
+      `/user/consultations?${queryParams.toString()}`
+    );
+  }
+
+  static async acceptDietPlan(requestId: number): Promise<ApiResponse<ConsultationRequest>> {
+    return await this.authenticatedRequest<ConsultationRequest>(
+      `/user/consultations/${requestId}/accept`, 
+      'POST'
+    );
+  }
+
+  static async rejectDietPlan(requestId: number): Promise<ApiResponse<ConsultationRequest>> {
+    return await this.authenticatedRequest<ConsultationRequest>(
+      `/user/consultations/${requestId}/reject`, 
+      'POST'
+    );
   }
 
   // Helper method for authenticated requests
