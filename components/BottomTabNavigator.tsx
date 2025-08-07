@@ -2,14 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import { CurvedBottomBar } from 'react-native-curved-bottom-bar';
 import { useCart } from '../context/CartContext';
 import ApiService from '../services/api-service';
 import LocationService from '../services/location-service';
 
 interface BottomTabNavigatorProps {
   activeTab: 'home' | 'consultations' | 'orders' | 'cart';
-  onLocationRefresh?: () => void; // Add callback for location refresh
+  onLocationRefresh?: () => void;
 }
 
 const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({ 
@@ -51,137 +51,151 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
       setIsRefreshing(false);
     }
   };
-  
+
+  // Define routes for CurvedBottomBar
+  const _renderIcon = (routeName: string, selectedTab: string) => {
+    let iconName = '';
+    switch (routeName) {
+      case 'home':
+        iconName = selectedTab === 'home' ? 'home' : 'home-outline';
+        break;
+      case 'consultations':
+        iconName = selectedTab === 'consultations' ? 'clipboard' : 'clipboard-outline';
+        break;
+      case 'orders':
+        iconName = selectedTab === 'orders' ? 'receipt' : 'receipt-outline';
+        break;
+      case 'cart':
+        iconName = selectedTab === 'cart' ? 'cart' : 'cart-outline';
+        break;
+    }
+    
+    return (
+      <View style={routeName === selectedTab ? styles.selectedTabContainer : null}>
+        <Ionicons name={iconName as any} size={24} color="#FFFFFF" />
+        {routeName === 'cart' && cart && cart.totalItems > 0 && (
+          <View style={styles.cartBadge}>
+            <Text style={styles.cartBadgeText}>
+              {cart.totalItems > 99 ? '99+' : cart.totalItems}
+            </Text>
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  // Handle route press
+  const handleTabPress = (routeName: string) => {
+    router.push(`/${routeName}`);
+  };
+
   return (
-    <View style={styles.navigationContainer}>
-      {/* SVG curved background */}
-      <View style={styles.navigationBarBg}>
-        <Svg
-          width="100%"
-          height={74}
-          viewBox="0 0 400 74"
-          style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}
-        >
-          <Path
-            d="M0 0 H120 Q145 0 160 38 Q200 64 240 38 Q255 0 280 0 H400 V74 H0 Z"
-            fill="#01893F"
-          />
-        </Svg>
-      </View>
-      <View style={styles.navigationBarContent}>
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => router.push('/home')}
-        >
-          <Ionicons 
-            name={activeTab === 'home' ? "home" : "home-outline"} 
-            size={24} 
-            color="#FFFFFF" 
-          />
-          {activeTab === 'home' && <View style={styles.activeNavDot} />}
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => router.push('/consultations')}
-        >
-          <Ionicons 
-            name={activeTab === 'consultations' ? "clipboard" : "clipboard-outline"} 
-            size={24} 
-            color="#FFFFFF" 
-          />
-          {activeTab === 'consultations' && <View style={styles.activeNavDot} />}
-        </TouchableOpacity>
-        <View style={styles.navCenterItemPlaceholder} />
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => router.push('/orders')}
-        >
-          <Ionicons 
-            name={activeTab === 'orders' ? "receipt" : "receipt-outline"} 
-            size={24} 
-            color="#FFFFFF" 
-          />
-          {activeTab === 'orders' && <View style={styles.activeNavDot} />}
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => router.push('/cart')}
-        >
-          <Ionicons 
-            name={activeTab === 'cart' ? "cart" : "cart-outline"} 
-            size={24} 
-            color="#FFFFFF" 
-          />
-          {activeTab === 'cart' && <View style={styles.activeNavDot} />}
-          {cart && cart.totalItems > 0 && (
-            <View style={styles.cartBadge}>
-              <Text style={styles.cartBadgeText}>
-                {cart.totalItems > 99 ? '99+' : cart.totalItems}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
-      {/* Floating center button */}
-      <View style={styles.floatingButtonContainer}>
-        <TouchableOpacity 
-          style={styles.navCenterButton}
-          onPress={handleLocationRefresh}
-          disabled={isRefreshing}
-        >
-          <View style={styles.innerCircle}>
+    <View style={styles.container}>
+      <CurvedBottomBar.Navigator
+        type="DOWN"
+        style={styles.bottomBar}
+        shadowStyle={styles.shawdow}
+        height={75}
+        circleWidth={60}
+        bgColor="#01893F"
+        initialRouteName={activeTab}
+        borderTopLeftRight
+        renderCircle={() => (
+          <TouchableOpacity
+            style={styles.btnCircle}
+            onPress={handleLocationRefresh}
+            disabled={isRefreshing}
+          >
             {isRefreshing ? (
               <ActivityIndicator size="small" color="#FFF" />
             ) : (
-              <Ionicons name="locate" size={32} color="#FFF" />
+              <Ionicons name="locate" size={28} color="#FFF" />
             )}
-          </View>
-        </TouchableOpacity>
-        {/* Tooltip for the center button */}
-      
-      </View>
+          </TouchableOpacity>
+        )}
+        tabBar={({ routeName, selectedTab, navigate }) => {
+          return (
+            <TouchableOpacity
+              onPress={() => handleTabPress(routeName)}
+              style={styles.tabButton}
+            >
+              {_renderIcon(routeName, selectedTab)}
+              {routeName === selectedTab && <View style={styles.activeNavDot} />}
+            </TouchableOpacity>
+          );
+        }}
+      >
+        <CurvedBottomBar.Screen
+          name="home"
+          position="LEFT"
+          component={() => <View />}
+        />
+        <CurvedBottomBar.Screen
+          name="consultations"
+          position="LEFT"
+          component={() => <View />}
+        />
+        <CurvedBottomBar.Screen
+          name="orders"
+          position="RIGHT"
+          component={() => <View />}
+        />
+        <CurvedBottomBar.Screen
+          name="cart"
+          position="RIGHT"
+          component={() => <View />}
+        />
+      </CurvedBottomBar.Navigator>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  navigationContainer: {
+  container: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 74,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    height: 75,
+  },
+  bottomBar: {
     backgroundColor: 'transparent',
   },
-  navigationBarBg: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 74,
-    zIndex: 1,
+  shawdow: {
+    shadowColor: '#01893F',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
-  navigationBarContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    height: 74,
-    width: '100%',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 2,
-    paddingHorizontal: 10,
-  },
-  navItem: {
+  btnCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100%',
-    position: 'relative',
+    backgroundColor: '#01893F',
+    bottom: 30,
+    shadowColor: '#01893F',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 1,
+  },
+  tabButton: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+  },
+  selectedTabContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   activeNavDot: {
     width: 6,
@@ -189,12 +203,12 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: '#FFFFFF',
     position: 'absolute',
-    bottom: 12,
+    bottom: -10,
   },
   cartBadge: {
     position: 'absolute',
-    right: 10,
-    top: 12,
+    right: -10,
+    top: -10,
     backgroundColor: '#FF3B30',
     borderRadius: 10,
     minWidth: 20,
@@ -208,52 +222,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-  navCenterItemPlaceholder: {
-    width: 68,
-    flex: 1,
-  },
-  floatingButtonContainer: {
-    position: 'absolute',
-    bottom: 37,
-    alignSelf: 'center',
-    zIndex: 3,
-    alignItems: 'center',
-  },
-  navCenterButton: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#01893F',
-    shadowColor: '#01893F',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 12,
-    borderWidth: 3,
-    borderColor: 'white',
-  },
-  innerCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonTooltip: {
-    position: 'absolute',
-    bottom: -22,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-  },
-  tooltipText: {
-    color: '#FFF',
-    fontSize: 12,
-    fontWeight: '500',
-  },
 });
 
 export default BottomTabNavigator;
+   
