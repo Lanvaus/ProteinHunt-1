@@ -366,7 +366,10 @@ const HomeScreen = () => {
             </View>
           </TouchableOpacity>
           
-          <TouchableOpacity style={[styles.featureCard, styles.featureCardRight]}>
+          <TouchableOpacity 
+            style={[styles.featureCard, styles.featureCardRight]}
+            onPress={() => router.push('/build-a-bowl')}
+          >
             <Image
               source={require('../assets/images/build-a-bowl.png')}
               style={styles.featureImage}
