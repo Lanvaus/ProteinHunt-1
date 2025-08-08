@@ -503,7 +503,7 @@ const HomeScreen = () => {
             <View style={styles.consultationActions}>
               <TouchableOpacity 
                 style={styles.bookButton}
-                onPress={() => router.push('/consultation-upload')}
+                onPress={() => router.push('/consultation-booking')}
               >
                 <Text style={styles.bookButtonText}>Book Consultation</Text>
               </TouchableOpacity>

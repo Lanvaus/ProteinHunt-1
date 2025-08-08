@@ -3,20 +3,19 @@ import * as DocumentPicker from 'expo-document-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import BottomTabNavigator from '../components/BottomTabNavigator';
 import ApiService from '../services/api-service';
 
 const ConsultationUploadScreen = () => {
@@ -187,7 +186,7 @@ const ConsultationUploadScreen = () => {
       </KeyboardAvoidingView>
       
       {/* Add the bottom tab navigator */}
-      <BottomTabNavigator activeTab="consultations" />
+      {/* <BottomTabNavigator activeTab="consultations" /> */}
     </SafeAreaView>
   );
 };
