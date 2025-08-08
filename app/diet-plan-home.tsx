@@ -156,15 +156,15 @@ const DietPlansScreen = () => {
       {/* Navigation Tabs - Now positioned at bottom */}
       <View style={styles.navigationContainer}>
         <TouchableOpacity 
-          style={[styles.navTab, activeTab === 'diets' && styles.activeNavTab]} 
+          style={[styles.navTab, activeTab === 'diet' && styles.activeNavTab]} 
           onPress={() => handleTabPress('diet')}
         >
           <Ionicons 
             name="nutrition-outline" 
             size={22} 
-            color={activeTab === 'diets' ? "#18853B" : "#666"} 
+            color={activeTab === 'diet' ? "#18853B" : "#666"} 
           />
-          <Text style={[styles.navTabText, activeTab === 'diets' && styles.activeNavTabText]}>
+          <Text style={[styles.navTabText, activeTab === 'diet' && styles.activeNavTabText]}>
             My Diet Plans
           </Text>
         </TouchableOpacity>
@@ -247,8 +247,8 @@ const styles = StyleSheet.create({
   optionCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    padding: 14,
-    marginBottom: 12,
+    padding: 18,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: '#18853B',
     borderStyle: 'dashed',
@@ -256,60 +256,61 @@ const styles = StyleSheet.create({
   cardContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   cardTextContent: {
     flex: 1,
-    marginRight: 12,
+    marginRight: 16,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
     color: '#333',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   cardDescription: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#666',
-    marginBottom: 12,
-    lineHeight: 18,
+    marginBottom: 16,
+    lineHeight: 20,
   },
   actionButton: {
     backgroundColor: '#18853B',
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 10,
     width: '100%',
-    marginBottom: 8,
+    marginBottom: 10,
     alignItems: 'center',
   },
   actionButtonText: {
     color: '#FFFFFF',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 15,
   },
   supportedFormatsText: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#999',
   },
   ingredientsText: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#999',
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     backgroundColor: '#F0F9F4',
     justifyContent: 'center',
     alignItems: 'center',
   },
   badgeContainer: {
-    marginBottom: 12,
+    marginBottom: 16,
   },
   nutritionistBadge: {
     backgroundColor: '#F0F9F4',
-    paddingVertical: 3,
-    paddingHorizontal: 10,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
     borderRadius: 12,
     alignSelf: 'flex-start',
   },
