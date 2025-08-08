@@ -252,34 +252,35 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#18853B',
     borderStyle: 'dashed',
+    position: 'relative', // Keep this for absolute positioning of icon
   },
   cardContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    // Removed alignItems: 'center' to allow top alignment
+    width: '100%',
   },
   cardTextContent: {
-    flex: 1,
-    marginRight: 16,
+    width: '100%', // Take full width
+    // Remove paddingRight from here
   },
   cardTitle: {
     fontSize: 17,
     fontWeight: '700',
     color: '#333',
     marginBottom: 8,
+    paddingRight: 55, // Add padding to title to avoid icon overlap
   },
   cardDescription: {
     fontSize: 14,
     color: '#666',
     marginBottom: 16,
     lineHeight: 20,
+    paddingRight: 55, // Add padding to description to avoid icon overlap
   },
   actionButton: {
     backgroundColor: '#18853B',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 10,
-    width: '100%',
+    width: '100%', // This will now truly be 100% of the card width
     marginBottom: 10,
     alignItems: 'center',
   },
@@ -291,10 +292,12 @@ const styles = StyleSheet.create({
   supportedFormatsText: {
     fontSize: 12,
     color: '#999',
+    // No right padding so it can go under the icon
   },
   ingredientsText: {
     fontSize: 12,
     color: '#999',
+    // No right padding so it can go under the icon
   },
   iconContainer: {
     width: 46,
@@ -303,11 +306,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F9F4',
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'flex-start', // This will align the icon to the top
-    marginTop: 0, // Position at the very top
+    position: 'absolute', // Position absolutely
+    top: 0,
+    right: 0, // Place at the top-right corner
   },
   badgeContainer: {
     marginBottom: 16,
+    paddingRight: 55, // Add padding to badge container to avoid icon overlap
   },
   nutritionistBadge: {
     backgroundColor: '#F0F9F4',
