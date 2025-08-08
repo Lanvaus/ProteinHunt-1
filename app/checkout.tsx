@@ -185,7 +185,7 @@ const CheckoutScreen = () => {
     setPlacingOrder(true);
     try {
       const orderRequest = {
-        deliveryAddressId: selectedAddress.id!,  // Changed from addressId to deliveryAddressId
+        deliveryAddressId: 6,  // Changed from addressId to deliveryAddressId
         paymentMethod: selectedPaymentMethod,
         specialInstructions: specialInstructions.trim() || undefined,
       };
@@ -196,7 +196,7 @@ const CheckoutScreen = () => {
         // Navigate to order success page
         router.replace({
           pathname: '/order-success',
-          params: { orderId: response.data.orderId }
+          params: { orderId: response.data.id }
         });
       } else {
         Alert.alert('Error', response.error || 'Failed to place order');
