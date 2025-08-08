@@ -152,7 +152,7 @@ const OrdersScreen = () => {
       
       <View style={styles.orderInfo}>
         <Text style={styles.orderDate}>
-          <Ionicons name="calendar-outline" size={14} color="#666" /> {formatDate(item.orderDate)}
+          <Ionicons name="calendar-outline" size={14} color="#666" /> {item.orderDate.toString().slice(0, 10)}
         </Text>
         <Text style={styles.orderItemsCount}>
           <Ionicons name="fast-food-outline" size={14} color="#666" /> {item.items.length} items
@@ -161,10 +161,10 @@ const OrdersScreen = () => {
       
       <View style={styles.orderFooter}>
         <Text style={styles.orderTotal}>₹{item.totalAmount.toFixed(2)}</Text>
-        <View style={styles.viewDetailsContainer}>
+        {/* <View style={styles.viewDetailsContainer}>
           <Text style={styles.viewDetailsText}>View Details</Text>
           <Ionicons name="chevron-forward" size={16} color="#18853B" />
-        </View>
+        </View> */}
       </View>
     </TouchableOpacity>
   );
