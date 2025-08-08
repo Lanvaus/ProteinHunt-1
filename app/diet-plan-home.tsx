@@ -30,7 +30,7 @@ const DietPlansScreen = () => {
   };
 
   const navigateToExpertPlans = () => {
-    router.push('/expert-diet-plans');
+    router.push('/diet-plans');
   };
 
   const navigateToCustomize = () => {
@@ -156,15 +156,15 @@ const DietPlansScreen = () => {
       {/* Navigation Tabs - Now positioned at bottom */}
       <View style={styles.navigationContainer}>
         <TouchableOpacity 
-          style={[styles.navTab, activeTab === 'diet' && styles.activeNavTab]} 
+          style={[styles.navTab, activeTab === 'diets' && styles.activeNavTab]} 
           onPress={() => handleTabPress('diet')}
         >
           <Ionicons 
             name="nutrition-outline" 
             size={22} 
-            color={activeTab === 'diet' ? "#18853B" : "#666"} 
+            color={activeTab === 'diets' ? "#18853B" : "#666"} 
           />
-          <Text style={[styles.navTabText, activeTab === 'diet' && styles.activeNavTabText]}>
+          <Text style={[styles.navTabText, activeTab === 'diets' && styles.activeNavTabText]}>
             My Diet Plans
           </Text>
         </TouchableOpacity>
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   cardContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    // Removed alignItems: 'center' to allow top alignment
   },
   cardTextContent: {
     flex: 1,
@@ -303,6 +303,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F9F4',
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'flex-start', // This will align the icon to the top
+    marginTop: 0, // Position at the very top
   },
   badgeContainer: {
     marginBottom: 16,
