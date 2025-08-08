@@ -9,6 +9,7 @@ import {
   Image,
   Platform,
   SafeAreaView,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -629,9 +630,13 @@ const BuildABowlScreen = () => {
           </View>
         );
       
-      case 3: // Review
+      case 3: // Review - Modified to be scrollable
         return (
-          <View style={styles.reviewContainer}>
+          <ScrollView 
+            style={styles.reviewScrollContainer}
+            contentContainerStyle={styles.reviewContainer}
+            showsVerticalScrollIndicator={true}
+          >
             <Text style={styles.reviewTitle}>Your Custom Bowl</Text>
             
             {/* Base section */}
@@ -734,7 +739,7 @@ const BuildABowlScreen = () => {
                 <Text style={styles.addToCartButtonText}>Add to Cart</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </ScrollView>
         );
       
       default:
@@ -1451,8 +1456,11 @@ const styles = StyleSheet.create({
   
   // Review screen styles
   reviewContainer: {
-    flex: 1,
     padding: 16,
+    paddingBottom: 40, // Add extra padding at the bottom
+  },
+  reviewScrollContainer: {
+    flex: 1,
   },
   reviewTitle: {
     fontSize: 20,

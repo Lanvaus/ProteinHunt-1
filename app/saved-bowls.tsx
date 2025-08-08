@@ -2,18 +2,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    Platform,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import BottomTabNavigator from '../components/BottomTabNavigator';
 import CustomMealService, { SavedCustomMeal } from '../services/custom-meal-service';
 
 const SavedBowlsScreen = () => {
@@ -228,7 +227,7 @@ const SavedBowlsScreen = () => {
       )}
       
       {/* Bottom Tab Navigation */}
-      <BottomTabNavigator activeTab="home" />
+      {/* <BottomTabNavigator activeTab="home" /> */}
     </SafeAreaView>
   );
 };
