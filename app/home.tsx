@@ -528,7 +528,7 @@ const HomeScreen = () => {
         <View style={styles.featureCardsRow}>
           <TouchableOpacity 
             style={[styles.featureCard, styles.featureCardLeft]}
-            onPress={() => router.push('/diet-plans')}
+            onPress={() => router.push('/diet-plan-home')}
           >
             <Image
               source={require('../assets/images/diet-plan.png')}

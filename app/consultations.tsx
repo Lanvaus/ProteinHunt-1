@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import BottomTabNavigator from '../components/BottomTabNavigator';
 import ApiService from '../services/api-service';
 
 interface ConsultationMessage {
@@ -409,7 +408,7 @@ const ConsultationsScreen = () => {
       )}
       
       {/* Add the BottomTabNavigator with consultations as the active tab */}
-      <BottomTabNavigator activeTab="consultations" />
+      {/* <BottomTabNavigator activeTab="consultations" /> */}
     </SafeAreaView>
   );
 };
