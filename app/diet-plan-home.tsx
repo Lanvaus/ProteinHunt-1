@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import * as DocumentPicker from 'expo-document-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -21,17 +20,9 @@ const DietPlansScreen = () => {
   
   const handleUploadDietChart = async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: ['application/pdf', 'image/*'],
-        copyToCacheDirectory: true,
-      });
       
-      if (result.canceled === false) {
-        // Handle the uploaded document
-        console.log("Document selected:", result.assets[0]);
-        // Navigate to next screen or process the document
-        router.push('/diet-confirmation');
-      }
+        router.push('/consultation-upload');
+      
     } catch (error) {
       console.error('Error picking document:', error);
       Alert.alert('Error', 'Failed to pick document');
@@ -43,7 +34,7 @@ const DietPlansScreen = () => {
   };
 
   const navigateToCustomize = () => {
-    router.push('/customize-meals');
+    router.push('/build-a-bowl');
   };
 
   const handleTabPress = (tab: string) => {
