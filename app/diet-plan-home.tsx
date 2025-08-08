@@ -156,16 +156,16 @@ const DietPlansScreen = () => {
       {/* Navigation Tabs - Now positioned at bottom */}
       <View style={styles.navigationContainer}>
         <TouchableOpacity 
-          style={[styles.navTab, activeTab === 'diet' && styles.activeNavTab]} 
+          style={[styles.navTab, activeTab === 'diets' && styles.activeNavTab]} 
           onPress={() => handleTabPress('diet')}
         >
           <Ionicons 
             name="nutrition-outline" 
             size={22} 
-            color={activeTab === 'diet' ? "#18853B" : "#666"} 
+            color={activeTab === 'diets' ? "#18853B" : "#666"} 
           />
-          <Text style={[styles.navTabText, activeTab === 'diet' && styles.activeNavTabText]}>
-            Diet Plans
+          <Text style={[styles.navTabText, activeTab === 'diets' && styles.activeNavTabText]}>
+            My Diet Plans
           </Text>
         </TouchableOpacity>
         
@@ -179,7 +179,7 @@ const DietPlansScreen = () => {
             color={activeTab === 'consultants' ? "#18853B" : "#666"} 
           />
           <Text style={[styles.navTabText, activeTab === 'consultants' && styles.activeNavTabText]}>
-            Consultants
+            My Consultants
           </Text>
         </TouchableOpacity>
         
